@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin Intelligence — Weekly Brief</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f4f8f5;
+  --bg2:      #e8f0ea;
+  --bg3:      #d8e8db;
+  --ink:      #1a2e20;
+  --ink2:     #2f4a35;
+  --ink3:     #6a8a70;
+  --rule:     #c8dece;
+  --red:      #c0392b;
+  --red-bg:   #fdf2f0;
+  --red-rule: #f0b8b0;
+  --amber:    #b35a00;
+  --amb-bg:   #fdf6ee;
+  --amb-rule: #e8c08a;
+  --green:    #16a34a;
+  --grn-bg:   #f0faf4;
+  --grn-rule: #86efac;
+  --blue:     #1a4a8a;
+  --blu-bg:   #f0f4fb;
+  --blu-rule: #9ab8e0;
+  --accent:   #16a34a;
+  --nav-bg:   #1a2e20;
+  --nav-border: #243d28;
+  --mono:     'DM Mono', monospace;
+  --sans:     'DM Sans', sans-serif;
+  --display:  'Syne', sans-serif;
+}
+/* ── GLOBAL TYPOGRAPHY BASE ── */
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.65}
+h1,h2,h3,h4{font-family:var(--sans);font-weight:700;line-height:1.3;color:var(--ink)}
+p{margin-bottom:8px;color:var(--ink2)}
+strong{font-weight:600;color:var(--ink)}
+
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;gap:16px;
+  padding:0 32px;height:52px;
+  background:var(--nav-bg);color:var(--bg);
+  border-bottom:2px solid var(--accent);
+  position:sticky;top:0;z-index:200;
+}
+.logo{font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:1px;color:#fff}
+.logo em{color:var(--accent);font-style:normal}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.api-input{
+  padding:6px 12px;border-radius:4px;
+  border:1px solid #2e4f34;background:#243d28;
+  color:#c8e6cc;font-family:var(--mono);font-size:11px;width:220px;outline:none;
+}
+.api-input:focus{border-color:var(--accent)}
+.run-all-btn{
+  padding:7px 18px;background:var(--accent);color:#fff;
+  border:none;border-radius:4px;font-family:var(--display);
+  font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;
+  transition:opacity .15s;
+}
+.run-all-btn:hover:not(:disabled){opacity:.85}
+.run-all-btn:disabled{opacity:.4;cursor:not-allowed}
+.week-badge{font-family:var(--mono);font-size:10px;color:#888;letter-spacing:.5px}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - 52px);overflow:hidden}
+.nav{background:var(--nav-bg);padding:24px 0;height:100%;overflow-y:auto}
+.nav-section{padding:0 0 20px;border-bottom:1px solid var(--nav-border);margin-bottom:20px}
+.nav-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#555;padding:0 20px 10px;text-transform:uppercase}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;cursor:pointer;
+  font-size:12px;color:#888;transition:all .15s;border:none;background:none;width:100%;text-align:left;
+}
+.nav-item:hover{color:#c8e6cc;background:#243d28}
+.nav-item.active{color:#fff;background:#243d28;border-left:2px solid var(--accent)}
+.nav-status{width:6px;height:6px;border-radius:50%;background:#333;flex-shrink:0}
+.nav-status.done{background:var(--green)}
+.nav-status.error{background:var(--red)}
+.nav-status.running{background:var(--amber);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── ANOMALY SIDEBAR ── */
+.anomaly-bar{padding:0 20px}
+.anom-item{
+  padding:8px 10px;border-radius:4px;margin-bottom:6px;
+  border-left:2px solid transparent;font-size:11px;
+}
+.anom-high{background:#2a1a18;border-color:var(--red);color:#f0a0a0}
+.anom-med{background:#2a2010;border-color:var(--amber);color:#e8c070}
+.anom-metric{font-family:var(--mono);font-size:10px;margin-bottom:2px;font-weight:500}
+.anom-delta{font-family:var(--mono);font-size:10px;color:#5a7a60}
+
+/* ── MAIN ── */
+.main{height:100%;overflow-y:auto;display:flex;flex-direction:column}
+
+/* ── HERO KPI ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-bottom:20px}
+.kpi{background:var(--bg2);padding:18px 20px}
+.kpi-label{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink3);margin-bottom:4px}
+.kpi-value{font-family:var(--sans);font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+.kpi-delta{font-family:var(--sans);font-size:11px;font-weight:500;margin-top:4px}
+.delta-up{color:var(--green)}
+.delta-dn{color:var(--red)}
+.delta-nt{color:var(--ink3)}
+
+/* ── TEMPLATE CARD ── */
+.template-card{
+  background:#f9fcfa;border:1px solid var(--rule);border-radius:8px;
+  margin-bottom:24px;overflow:hidden;
+}
+.card-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;border-bottom:1px solid var(--rule);
+  background:var(--bg2);cursor:pointer;
+}
+.card-header:hover{background:var(--bg3)}
+.t-num{
+  font-family:var(--sans);font-size:11px;font-weight:800;
+  color:var(--accent);letter-spacing:1px;min-width:20px;
+}
+.card-title{font-family:var(--display);font-size:13px;font-weight:700;flex:1}
+.card-desc{font-size:11px;color:var(--ink3)}
+.card-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.run-btn{
+  padding:5px 14px;border:1px solid var(--rule);border-radius:4px;
+  background:#f9fcfa;color:var(--ink2);font-family:var(--sans);font-size:11px;
+  cursor:pointer;transition:all .15s;font-weight:500;
+}
+.run-btn:hover:not(:disabled){background:var(--accent);color:#fff;border-color:var(--accent)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed}
+.card-body{padding:20px;display:none}
+.card-body.open{display:block}
+
+/* ── DATA PREVIEW ── */
+.data-preview{
+  background:var(--bg);border:1px solid var(--rule);border-radius:6px;
+  padding:12px 14px;margin-bottom:16px;overflow-x:auto;
+}
+.data-preview pre{font-family:var(--mono);font-size:10px;color:var(--ink2);white-space:pre-wrap;word-break:break-word}
+
+/* ── OUTPUT ── */
+.output-area{
+  border:1px solid var(--rule);border-radius:6px;overflow:hidden;
+  min-height:60px;
+}
+.output-loading{
+  padding:24px;text-align:center;
+  font-family:var(--mono);font-size:11px;color:var(--ink3);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.loader{display:flex;gap:5px}
+.loader span{width:8px;height:8px;border-radius:50%;background:var(--rule);animation:dots .8s infinite}
+.loader span:nth-child(2){animation-delay:.15s}
+.loader span:nth-child(3){animation-delay:.3s}
+@keyframes dots{0%,60%,100%{transform:translateY(0);background:var(--rule)}30%{transform:translateY(-5px);background:var(--ink3)}}
+.output-rendered{padding:20px}
+
+/* ── RENDERED OUTPUT STYLES ── */
+.risk-card{
+  border:1px solid var(--rule);border-radius:6px;padding:14px 16px;margin-bottom:10px;
+  border-left:3px solid var(--rule);
+}
+.risk-high{border-left-color:var(--red);background:var(--red-bg)}
+.risk-med{border-left-color:var(--amber);background:var(--amb-bg)}
+.risk-low{border-left-color:var(--green);background:var(--grn-bg)}
+.risk-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.risk-badge{
+  padding:2px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.5px;
+}
+.badge-high{background:var(--red);color:#fff}
+.badge-med{background:var(--amber);color:#fff}
+.badge-low{background:var(--green);color:#fff}
+/* ── RISK CARDS ── */
+.risk-title{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink)}
+.risk-impact{font-family:var(--sans);font-size:12px;font-weight:600;margin-left:auto;white-space:nowrap}
+.risk-high .risk-impact{color:var(--red)}
+.risk-med .risk-impact{color:var(--amber)}
+.risk-detail{font-size:13px;color:var(--ink2);margin-bottom:5px;line-height:1.6}
+.risk-action{
+  display:flex;align-items:flex-start;gap:6px;
+  font-size:12px;color:var(--blue);background:var(--blu-bg);
+  border:1px solid var(--blu-rule);border-radius:4px;padding:8px 12px;margin-top:8px;
+}
+.risk-action::before{content:"→";font-weight:700;flex-shrink:0}
+
+/* ── OUTPUT TABLE ── */
+.out-table{width:100%;border-collapse:collapse;font-size:13px}
+.out-table th{
+  text-align:left;padding:10px 12px;
+  font-family:var(--sans);font-size:11px;font-weight:700;
+  color:var(--ink3);border-bottom:2px solid var(--rule);background:var(--bg2);
+  letter-spacing:0;text-transform:none;
+}
+.out-table td{padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:13px;color:var(--ink2)}
+.out-table tr:last-child td{border-bottom:none}
+.out-table tr:hover td{background:var(--bg)}
+.action-continue{color:var(--green);font-weight:700;font-size:12px}
+.action-pause{color:var(--red);font-weight:700;font-size:12px}
+.action-restructure{color:var(--amber);font-weight:700;font-size:12px}
+.low-roas{background:var(--red-bg) !important}
+
+/* ── EXEC SUMMARY ── */
+.exec-section{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--rule)}
+.exec-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.exec-section-label{
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  color:var(--accent);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.exec-section-label::before{content:'';display:inline-block;width:3px;height:14px;background:var(--accent);border-radius:2px;flex-shrink:0}
+.exec-text{font-size:14px;line-height:1.75;color:var(--ink2);margin-bottom:6px}
+.exec-bullet{
+  display:flex;gap:10px;margin-bottom:8px;
+  font-size:14px;color:var(--ink2);line-height:1.65;
+}
+.exec-bullet::before{content:"•";color:var(--accent);flex-shrink:0;font-size:16px;line-height:1.4}
+
+/* ── PRICING SECTION ── */
+.pricing-type{
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  color:var(--ink2);margin:20px 0 10px;
+  padding:8px 12px;background:var(--bg2);border-radius:6px;
+  border-left:3px solid var(--accent);
+}
+.pricing-type:first-child{margin-top:0}
+.conf-high{color:var(--green);font-weight:700;font-size:12px}
+.conf-med{color:var(--amber);font-weight:700;font-size:12px}
+.conf-low{color:var(--ink3);font-weight:600;font-size:12px}
+
+/* ── SUPPLIER BLOCKS ── */
+.supplier-block{
+  border:1px solid var(--rule);border-radius:8px;padding:16px 18px;margin-bottom:12px;
+}
+.supplier-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.supplier-name{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink)}
+.supplier-change{font-family:var(--sans);font-size:13px;font-weight:600}
+.sup-increase{color:var(--red)}
+.sup-decrease{color:var(--green)}
+.supplier-rec{
+  display:inline-block;padding:3px 12px;border-radius:20px;
+  font-family:var(--sans);font-size:11px;font-weight:700;margin-left:auto;
+}
+.rec-absorb{background:var(--grn-bg);color:var(--green);border:1px solid var(--grn-rule)}
+.rec-pass{background:var(--blu-bg);color:var(--blue);border:1px solid var(--blu-rule)}
+.rec-renegotiate{background:var(--red-bg);color:var(--red);border:1px solid var(--red-rule)}
+
+/* ── RAW OUTPUT FALLBACK ── */
+.raw-output{
+  font-family:var(--sans);font-size:13px;line-height:1.75;color:var(--ink2);
+  white-space:pre-wrap;word-break:break-word;
+}
+.raw-output strong,.raw-output b{font-weight:700;color:var(--ink)}
+.error-box{
+  background:var(--red-bg);border:1px solid var(--red-rule);border-radius:6px;
+  padding:14px 16px;color:var(--red);font-family:var(--sans);font-size:13px;
+}
+
+/* ── AI SUGGESTION BOX ── */
+.ai-suggestion{
+  background:#f0faf4;
+  border:1.5px solid #86efac;border-radius:8px;padding:14px 16px;margin-top:12px;
+}
+.ai-suggestion-label{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--sans);font-size:11px;font-weight:700;
+  color:#16a34a;margin-bottom:8px;
+  background:#dcfce7;padding:3px 10px;border-radius:20px;border:1px solid #86efac;
+}
+.ai-suggestion-label::before{content:"✦";font-size:10px}
+.ai-suggestion-text{font-size:13px;color:var(--ink2);line-height:1.7}
+
+/* ── DATA SOURCE BAR ── */
+.data-sources{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:8px 32px;background:var(--bg2);border-bottom:1px solid var(--rule);
+  flex-shrink:0;
+}
+.main-content{flex:1;overflow-y:auto;min-height:0}
+.ds-label{font-family:var(--mono);font-size:9px;letter-spacing:.8px;color:var(--ink3);text-transform:uppercase;margin-right:4px}
+.ds-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  border:1px solid transparent;
+}
+.ds-shopify{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7}
+.ds-google{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
+.ds-xero{background:#e8f4fd;color:#0277bd;border-color:#81d4fa}
+.ds-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ── CARD HEADERS ── */
+.card-title-block{display:flex;flex-direction:column;gap:3px;flex:1}
+.card-title{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--ink)}
+.card-subtitle{font-size:12px;color:var(--ink3);font-weight:400;line-height:1.5}
+
+/* ── KPI TILES ── */
+.kpi-label{font-family:var(--sans);font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink3);margin-bottom:4px}
+.kpi-value{font-family:var(--sans);font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+.kpi-delta{font-family:var(--sans);font-size:11px;margin-top:4px;font-weight:500}
+
+/* ── NAV LABELS ── */
+.nav-label{font-family:var(--sans);font-size:10px;letter-spacing:.5px;color:#556;padding:0 20px 10px;text-transform:uppercase;font-weight:600}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;cursor:pointer;
+  font-size:13px;font-weight:500;color:#8a9a8e;transition:all .15s;border:none;background:none;width:100%;text-align:left;
+}
+.nav-item .tnum{font-family:var(--sans);font-size:11px;color:var(--accent);margin-left:auto;font-weight:600}
+
+/* ── CHART CARDS ── */
+.chart-card-title{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:2px}
+.chart-card-sub{font-size:11px;color:var(--ink3);margin-bottom:12px;font-weight:400}
+
+/* ── DATA SOURCE BADGES ── */
+.ds-label{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--ink3);margin-right:4px}
+.ds-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  border:1px solid transparent;
+}
+
+/* ── STATUS CHIPS ── */
+.status-chip{
+  padding:4px 10px;border-radius:20px;font-family:var(--sans);font-size:11px;font-weight:600;
+}
+.chip-idle{background:var(--bg3);color:var(--ink3)}
+.chip-running{background:var(--amb-bg);color:var(--amber);border:1px solid var(--amb-rule)}
+.chip-done{background:var(--grn-bg);color:var(--green);border:1px solid var(--grn-rule)}
+.chip-error{background:var(--red-bg);color:var(--red);border:1px solid var(--red-rule)}
+
+/* ── EMPTY STATE ── */
+.empty-state{padding:36px 20px;text-align:center}
+.empty-state-icon{font-size:30px;margin-bottom:12px}
+.empty-state-title{font-size:15px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.empty-state-desc{font-size:13px;color:var(--ink3);line-height:1.7;max-width:400px;margin:0 auto}
+
+/* ── RUN BUTTON ── */
+.run-btn{
+  padding:8px 20px;border:none;border-radius:6px;
+  background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;
+  cursor:pointer;transition:all .15s;font-weight:600;
+}
+.run-btn:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.run-btn::before{content:"▶  "}
+
+/* ── ANOMALY FLAGS ── */
+.anom-metric{font-family:var(--sans);font-size:11px;margin-bottom:2px;font-weight:700}
+.anom-delta{font-family:var(--sans);font-size:11px;color:#5a7a60}
+
+/* ── SECTION TITLE IN CHARTS ── */
+.charts-section-title{
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  color:var(--ink3);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;letter-spacing:0;text-transform:none;
+}
+.charts-section-title::after{content:'';flex:1;height:1px;background:var(--rule)}
+
+/* ── TABS ── */
+.tab-btn{
+  padding:10px 20px;font-family:var(--sans);font-size:13px;font-weight:600;
+  border:none;background:none;cursor:pointer;color:var(--ink3);
+  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;
+}
+.tab-btn:hover{color:var(--ink2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── TOPBAR API INPUT friendly ── */
+.api-wrap{display:flex;flex-direction:column;gap:2px}
+.api-wrap-label{font-family:var(--mono);font-size:9px;color:#7ab880;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── TAB NAV ── */
+.tab-bar{
+  display:flex;align-items:center;gap:2px;
+  padding:0 32px;background:var(--bg2);
+  border-bottom:2px solid var(--rule);flex-shrink:0;
+}
+.tab-btn{
+  padding:10px 20px;font-family:var(--sans);font-size:12px;font-weight:600;
+  border:none;background:none;cursor:pointer;color:var(--ink3);
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:all .15s;
+}
+.tab-btn:hover{color:var(--ink2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none;padding:28px 32px}
+.tab-panel.active{display:block}
+
+/* ── CHARTS SECTION ── */
+.charts-section{margin-bottom:32px}
+.charts-section-title{
+  font-family:var(--display);font-size:11px;font-weight:800;letter-spacing:2px;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.charts-section-title::after{content:'';flex:1;height:1px;background:var(--rule)}
+.charts-row{display:grid;gap:16px;margin-bottom:16px}
+.charts-row-4{grid-template-columns:repeat(4,1fr)}
+.charts-row-2{grid-template-columns:1fr 1fr}
+.charts-row-3{grid-template-columns:1fr 1fr 1fr}
+.chart-card{
+  background:#f9fcfa;border:1px solid var(--rule);border-radius:10px;
+  padding:16px 18px;position:relative;overflow:hidden;
+}
+.chart-card-title{
+  font-family:var(--sans);font-size:11px;font-weight:700;color:var(--ink2);
+  margin-bottom:2px;
+}
+.chart-card-sub{font-size:10px;color:var(--ink3);margin-bottom:12px}
+.chart-card canvas{display:block}
+.chart-badge{
+  position:absolute;top:14px;right:14px;
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  padding:2px 7px;border-radius:20px;
+}
+.chart-badge-up{background:var(--grn-bg);color:var(--green);border:1px solid var(--grn-rule)}
+.chart-badge-dn{background:var(--red-bg);color:var(--red);border:1px solid var(--red-rule)}
+.chart-badge-warn{background:var(--amb-bg);color:var(--amber);border:1px solid var(--amb-rule)}
+
+/* Chevron */
+.chev{font-size:10px;color:var(--ink3);transition:transform .2s;margin-left:4px}
+.chev.open{transform:rotate(180deg)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">Margin<em>Optimizer</em></div>
+  <div class="week-badge">WEEK 23 · 2025</div>
+  <div class="topbar-right">
+    <div class="api-wrap">
+      <span class="api-wrap-label">AI API Key</span>
+      <input class="api-input" id="api-key" type="password" placeholder="Paste your Groq key here…" oninput="API_KEY=this.value.trim()">
+    </div>
+    <button class="run-all-btn" id="run-all-btn" onclick="runAll()">▶ Run All Analysis</button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="nav">
+    <div class="nav-section">
+      <div class="nav-label">⚠ Needs Attention</div>
+      <div class="anomaly-bar" id="anomaly-bar"></div>
+    </div>
+  </nav>
+
+  <main class="main" id="main-scroll">
+
+    <div class="data-sources">
+      <span class="ds-label">Data from</span>
+      <span class="ds-badge ds-shopify"><span class="ds-dot"></span>Shopify — Orders &amp; Products</span>
+      <span class="ds-badge ds-google"><span class="ds-dot"></span>Google Ads — Campaign Spend</span>
+      <span class="ds-badge ds-xero"><span class="ds-dot"></span>Xero — COGS &amp; Supplier Costs</span>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('charts')">📊 Charts &amp; Metrics</button>
+      <button class="tab-btn" onclick="switchTab('analysis')">🤖 AI Analysis</button>
+    </div>
+
+    <div class="main-content">
+
+      <!-- ── CHARTS TAB ── -->
+      <div class="tab-panel active" id="tab-charts">
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Revenue (WTD)</div>
+            <div class="kpi-value">$214.4K</div>
+            <div class="kpi-delta delta-up">↑ +8.2% vs prior week</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Gross Margin %</div>
+            <div class="kpi-value">38.2%</div>
+            <div class="kpi-delta delta-dn">↓ −2.9pp vs prior week</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Blended ROAS</div>
+            <div class="kpi-value">2.8×</div>
+            <div class="kpi-delta delta-dn">↓ −0.4 vs 4wk avg</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Freight / Revenue</div>
+            <div class="kpi-value">5.3%</div>
+            <div class="kpi-delta delta-dn">↓ +0.8pp — spike</div>
+          </div>
+        </div>
+
+        <!-- ═══ CHARTS SECTION ═══ -->
+        <div class="charts-section">
+          <div class="charts-section-title">8-Week Trends</div>
+          <div class="charts-row charts-row-4">
+            <div class="chart-card">
+              <div class="chart-card-title">Weekly Revenue</div>
+              <div class="chart-card-sub">Last 8 weeks · Shopify</div>
+              <span class="chart-badge chart-badge-up">↑ +8.2%</span>
+              <div style="position:relative;height:80px"><canvas id="chart-revenue"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Gross Margin %</div>
+              <div class="chart-card-sub">Last 8 weeks · Shopify + Xero</div>
+              <span class="chart-badge chart-badge-dn">↓ −2.9pp</span>
+              <div style="position:relative;height:80px"><canvas id="chart-gm"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Blended ROAS</div>
+              <div class="chart-card-sub">Last 8 weeks · Google Ads</div>
+              <span class="chart-badge chart-badge-dn">↓ −0.4</span>
+              <div style="position:relative;height:80px"><canvas id="chart-roas"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Freight / Revenue %</div>
+              <div class="chart-card-sub">Last 8 weeks · Xero</div>
+              <span class="chart-badge chart-badge-warn">↑ spike</span>
+              <div style="position:relative;height:80px"><canvas id="chart-freight"></canvas></div>
+            </div>
+          </div>
+
+          <div class="charts-section-title">Product &amp; Campaign Breakdown</div>
+          <div class="charts-row charts-row-2">
+            <div class="chart-card">
+              <div class="chart-card-title">Gross Margin % by Product</div>
+              <div class="chart-card-sub">This week vs prior average · Shopify + Xero</div>
+              <div style="position:relative;height:200px"><canvas id="chart-sku-margin"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Campaign Profit ROAS</div>
+              <div class="chart-card-sub">True ROAS after product margin · Google Ads</div>
+              <div style="position:relative;height:200px"><canvas id="chart-campaign-roas"></canvas></div>
+            </div>
+          </div>
+
+          <div class="charts-section-title">Channel, Spend &amp; Suppliers</div>
+          <div class="charts-row charts-row-3">
+            <div class="chart-card">
+              <div class="chart-card-title">Revenue by Channel</div>
+              <div class="chart-card-sub">DTC vs Amazon vs Wholesale · Shopify</div>
+              <div style="position:relative;height:200px"><canvas id="chart-channel"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Ad Spend vs Revenue by Campaign</div>
+              <div class="chart-card-sub">This week · Google Ads</div>
+              <div style="position:relative;height:200px"><canvas id="chart-spend"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-title">Supplier Cost Change</div>
+              <div class="chart-card-sub">Current vs prior unit cost · Xero</div>
+              <div style="position:relative;height:200px"><canvas id="chart-supplier"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end tab-charts -->
+
+      <!-- ── AI ANALYSIS TAB ── -->
+      <div class="tab-panel" id="tab-analysis">
+
+    <div class="template-card" id="t1">
+      <div class="card-header" onclick="toggleCard('c1')">
+        <div class="card-title-block">
+          <span class="card-title">📉 Where is my margin going?</span>
+          <span class="card-subtitle">Finds the top issues eating into your profit this week — with dollar estimates</span>
+        </div>
+        <div class="card-actions">
+          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+          <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
+          <span class="status-chip chip-idle" id="chip-t1">Not run yet</span>
+          <button class="run-btn" id="btn-t1" onclick="event.stopPropagation();runTemplate('t1')">Analyse Now</button>
+          <span class="chev" id="chev-c1">▼</span>
+        </div>
+      </div>
+      <div class="card-body open" id="c1">
+        <div class="output-area" id="out-t1">
+          <div class="output-loading" style="display:none" id="load-t1">
+            <div class="loader"><span></span><span></span><span></span></div>
+            <span>AI is analysing your margin data…</span>
+          </div>
+          <div class="output-rendered" id="render-t1">
+            <div class="empty-state">
+              <div class="empty-state-icon">🔍</div>
+              <div class="empty-state-title">Ready to find your margin leaks</div>
+              <div class="empty-state-desc">Paste your API key above and click <strong>Analyse Now</strong> — the AI will scan your Shopify &amp; Xero data and flag the top issues in seconds.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card" id="t2">
+      <div class="card-header" onclick="toggleCard('c2')">
+        <div class="card-title-block">
+          <span class="card-title">📣 Which ads are actually making money?</span>
+          <span class="card-subtitle">Shows true profit per campaign after factoring in product margins — not just ROAS</span>
+        </div>
+        <div class="card-actions">
+          <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
+          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+          <span class="status-chip chip-idle" id="chip-t2">Not run yet</span>
+          <button class="run-btn" id="btn-t2" onclick="event.stopPropagation();runTemplate('t2')">Analyse Now</button>
+          <span class="chev" id="chev-c2">▼</span>
+        </div>
+      </div>
+      <div class="card-body" id="c2">
+        <div class="output-area" id="out-t2">
+          <div class="output-loading" style="display:none" id="load-t2"></div>
+          <div class="output-rendered" id="render-t2">
+            <div class="empty-state">
+              <div class="empty-state-icon">📣</div>
+              <div class="empty-state-title">Ready to audit your campaigns</div>
+              <div class="empty-state-desc">The AI will cross-reference your Google Ads spend with your Shopify product margins to show which campaigns are truly profitable.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card" id="t3">
+      <div class="card-header" onclick="toggleCard('c3')">
+        <div class="card-title-block">
+          <span class="card-title">🏭 Are my supplier costs hurting me?</span>
+          <span class="card-subtitle">Flags cost increases from Xero and tells you whether to absorb, pass on, or renegotiate</span>
+        </div>
+        <div class="card-actions">
+          <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
+          <span class="status-chip chip-idle" id="chip-t3">Not run yet</span>
+          <button class="run-btn" id="btn-t3" onclick="event.stopPropagation();runTemplate('t3')">Analyse Now</button>
+          <span class="chev" id="chev-c3">▼</span>
+        </div>
+      </div>
+      <div class="card-body" id="c3">
+        <div class="output-area" id="out-t3">
+          <div class="output-loading" style="display:none" id="load-t3"></div>
+          <div class="output-rendered" id="render-t3">
+            <div class="empty-state">
+              <div class="empty-state-icon">🏭</div>
+              <div class="empty-state-title">Ready to check supplier costs</div>
+              <div class="empty-state-desc">The AI will scan your Xero supplier invoices for cost movements over 3% and give you a clear recommendation for each one.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card" id="t4">
+      <div class="card-header" onclick="toggleCard('c4')">
+        <div class="card-title-block">
+          <span class="card-title">📋 Give me a plain-English summary</span>
+          <span class="card-subtitle">A 60-second brief covering what happened, what needs attention, and what to do today</span>
+        </div>
+        <div class="card-actions">
+          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+          <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
+          <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
+          <span class="status-chip chip-idle" id="chip-t4">Not run yet</span>
+          <button class="run-btn" id="btn-t4" onclick="event.stopPropagation();runTemplate('t4')">Analyse Now</button>
+          <span class="chev" id="chev-c4">▼</span>
+        </div>
+      </div>
+      <div class="card-body" id="c4">
+        <div class="output-area" id="out-t4">
+          <div class="output-loading" style="display:none" id="load-t4"></div>
+          <div class="output-rendered" id="render-t4">
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <div class="empty-state-title">Ready to write your weekly summary</div>
+              <div class="empty-state-desc">The AI will pull together all your data into a short, jargon-free summary you can read in under a minute.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="template-card" id="t5">
+      <div class="card-header" onclick="toggleCard('c5')">
+        <div class="card-title-block">
+          <span class="card-title">💰 How can I charge more (or discount less)?</span>
+          <span class="card-subtitle">Spots products where you can safely raise prices, cut discounts, or create bundles</span>
+        </div>
+        <div class="card-actions">
+          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+          <span class="status-chip chip-idle" id="chip-t5">Not run yet</span>
+          <button class="run-btn" id="btn-t5" onclick="event.stopPropagation();runTemplate('t5')">Analyse Now</button>
+          <span class="chev" id="chev-c5">▼</span>
+        </div>
+      </div>
+      <div class="card-body" id="c5">
+        <div class="output-area" id="out-t5">
+          <div class="output-loading" style="display:none" id="load-t5"></div>
+          <div class="output-rendered" id="render-t5">
+            <div class="empty-state">
+              <div class="empty-state-icon">💰</div>
+              <div class="empty-state-title">Ready to find pricing opportunities</div>
+              <div class="empty-state-desc">The AI will analyse your Shopify pricing data and flag specific products where you could make more money without hurting sales.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end t5 template-card -->
+
+      </div><!-- end tab-analysis -->
+    </div><!-- end main-content -->
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DUMMY DATA STORE
+// ═══════════════════════════════════════════════════
+
+let API_KEY = '';
+
+const DATA = {
+
+  margin: [
+    {sku:'SKU-022',name:'Running Shoes Pro',channel:'DTC',revenue:18400,cogs:9200,freight:2800,discounts:3120,gross_margin_pct:18.0,prior_avg_gm_pct:38.2,discount_rate_pct:16.9},
+    {sku:'SKU-007',name:'Wireless Headphones',channel:'Amazon',revenue:24600,cogs:11000,freight:980,discounts:1230,gross_margin_pct:46.1,prior_avg_gm_pct:47.5,discount_rate_pct:5.0},
+    {sku:'SKU-041',name:'Smart Watch Elite',channel:'DTC',revenue:31200,cogs:17200,freight:4400,discounts:5460,gross_margin_pct:13.3,prior_avg_gm_pct:34.1,discount_rate_pct:17.5},
+    {sku:'SKU-015',name:'Yoga Mat Premium',channel:'Wholesale',revenue:8900,cogs:3100,freight:1800,discounts:445,gross_margin_pct:39.9,prior_avg_gm_pct:52.0,discount_rate_pct:5.0},
+    {sku:'SKU-033',name:'Protein Powder 1kg',channel:'DTC',revenue:14200,cogs:8800,freight:620,discounts:2130,gross_margin_pct:18.7,prior_avg_gm_pct:41.3,discount_rate_pct:15.0},
+    {sku:'SKU-009',name:'Coffee Grinder Pro',channel:'Amazon',revenue:9400,cogs:3900,freight:560,discounts:470,gross_margin_pct:47.5,prior_avg_gm_pct:48.1,discount_rate_pct:5.0},
+    {sku:'SKU-055',name:'Backpack Ultra',channel:'DTC',revenue:12100,cogs:5200,freight:2900,discounts:605,gross_margin_pct:28.1,prior_avg_gm_pct:44.0,discount_rate_pct:5.0},
+  ],
+
+  campaigns: [
+    {campaign:'Brand Search – DTC',spend:4200,revenue:21000,roas:5.0,cac:28,primary_sku:'SKU-007'},
+    {campaign:'Shopping – Smart Watch',spend:6800,revenue:22440,roas:3.3,cac:62,primary_sku:'SKU-041'},
+    {campaign:'Retargeting – Cart Abandon',spend:2100,revenue:5880,roas:2.8,cac:45,primary_sku:'SKU-022'},
+    {campaign:'YouTube Discovery',spend:3400,revenue:5100,roas:1.5,cac:88,primary_sku:'SKU-055'},
+    {campaign:'Gmail Promo – Protein',spend:1800,revenue:3420,roas:1.9,cac:54,primary_sku:'SKU-033'},
+    {campaign:'Competitor KW Bid',spend:2900,revenue:5510,roas:1.9,cac:71,primary_sku:'SKU-041'},
+    {campaign:'Lookalike – High LTV',spend:3600,revenue:18720,roas:5.2,cac:33,primary_sku:'SKU-009'},
+  ],
+
+  sku_margins: {
+    'SKU-007':{name:'Wireless Headphones',gm_pct:46.1},
+    'SKU-041':{name:'Smart Watch Elite',gm_pct:13.3},
+    'SKU-022':{name:'Running Shoes Pro',gm_pct:18.0},
+    'SKU-055':{name:'Backpack Ultra',gm_pct:28.1},
+    'SKU-033':{name:'Protein Powder 1kg',gm_pct:18.7},
+    'SKU-009':{name:'Coffee Grinder Pro',gm_pct:47.5},
+    'SKU-015':{name:'Yoga Mat Premium',gm_pct:39.9},
+  },
+
+  suppliers: [
+    {supplier:'Apex Footwear Co',category:'Footwear',skus:['SKU-022'],prior_unit_cost:48.20,current_unit_cost:53.50,weekly_units:220,sell_price:89.99},
+    {supplier:'TechSource HK',category:'Electronics',skus:['SKU-007','SKU-041'],prior_unit_cost:62.00,current_unit_cost:67.40,weekly_units:310,sell_price:149.99},
+    {supplier:'NutriBlend Labs',category:'Nutrition',skus:['SKU-033'],prior_unit_cost:18.80,current_unit_cost:19.30,weekly_units:180,sell_price:44.99},
+    {supplier:'PackRight Global',category:'Bags',skus:['SKU-055'],prior_unit_cost:31.00,current_unit_cost:28.40,weekly_units:95,sell_price:79.99},
+    {supplier:'WellnessPro Mfg',category:'Fitness',skus:['SKU-015'],prior_unit_cost:11.20,current_unit_cost:11.50,weekly_units:140,sell_price:34.99},
+  ],
+
+  weekly_summary: {
+    revenue: 214400, revenue_prior: 198200,
+    gm_pct: 38.2, gm_pct_prior: 41.1,
+    ad_spend: 24800, roas: 2.8,
+    freight_total: 14200,
+    supplier_alerts: 2,
+    leakage_sources: 'SKU-022 discount 16.9% (was 5%), SKU-041 freight +62%, Protein COGS +8%'
+  },
+
+  pricing: [
+    {sku:'SKU-007',name:'Wireless Headphones',category:'Electronics',price:149.99,avg_discount_pct:5.0,gm_pct:46.1,category_avg_gm:38.0,conv_rate:3.2,conv_rate_prior:3.1,units_sold:310,returns:8},
+    {sku:'SKU-022',name:'Running Shoes Pro',category:'Footwear',price:89.99,avg_discount_pct:16.9,gm_pct:18.0,category_avg_gm:38.0,conv_rate:2.1,conv_rate_prior:2.8,units_sold:220,returns:12},
+    {sku:'SKU-009',name:'Coffee Grinder Pro',category:'Kitchen',price:79.99,avg_discount_pct:4.8,gm_pct:47.5,category_avg_gm:40.0,conv_rate:4.1,conv_rate_prior:4.0,units_sold:180,returns:3},
+    {sku:'SKU-041',name:'Smart Watch Elite',category:'Electronics',price:299.99,avg_discount_pct:17.5,gm_pct:13.3,category_avg_gm:38.0,conv_rate:1.8,conv_rate_prior:2.2,units_sold:140,returns:18},
+    {sku:'SKU-033',name:'Protein Powder 1kg',category:'Nutrition',price:44.99,avg_discount_pct:15.2,gm_pct:18.7,category_avg_gm:35.0,conv_rate:3.6,conv_rate_prior:3.5,units_sold:180,returns:5},
+    {sku:'SKU-015',name:'Yoga Mat Premium',category:'Fitness',price:34.99,avg_discount_pct:5.0,gm_pct:39.9,category_avg_gm:36.0,conv_rate:5.2,conv_rate_prior:5.0,units_sold:140,returns:2},
+    {sku:'SKU-055',name:'Backpack Ultra',category:'Bags',price:79.99,avg_discount_pct:5.0,gm_pct:28.1,category_avg_gm:36.0,conv_rate:2.9,conv_rate_prior:2.8,units_sold:95,returns:4},
+  ]
+};
+
+// ═══════════════════════════════════════════════════
+//  ANOMALY DETECTION  (runs before Claude)
+// ═══════════════════════════════════════════════════
+
+function detectAnomalies() {
+  const flags = [];
+  DATA.margin.forEach(r => {
+    const delta = (r.gross_margin_pct - r.prior_avg_gm_pct) / r.prior_avg_gm_pct;
+    if (delta < -0.05) flags.push({metric: r.name, delta: delta, label: `GM ${r.gross_margin_pct}% vs ${r.prior_avg_gm_pct}%`, severity: delta < -0.15 ? 'high' : 'med'});
+  });
+  DATA.suppliers.forEach(r => {
+    const delta = (r.current_unit_cost - r.prior_unit_cost) / r.prior_unit_cost;
+    if (Math.abs(delta) > 0.03) flags.push({metric: r.supplier, delta, label: `Cost ${delta>0?'+':''}${(delta*100).toFixed(1)}%`, severity: delta > 0.08 ? 'high' : 'med'});
+  });
+  return flags.sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 6);
+}
+
+function renderAnomalies() {
+  const flags = detectAnomalies();
+  const bar = document.getElementById('anomaly-bar');
+  bar.innerHTML = flags.map(f => `
+    <div class="anom-item ${f.severity==='high'?'anom-high':'anom-med'}">
+      <div class="anom-metric">${f.metric.length>20?f.metric.slice(0,18)+'…':f.metric}</div>
+      <div class="anom-delta">${f.label}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  TEMPLATE DEFINITIONS
+// ═══════════════════════════════════════════════════
+
+const TEMPLATES = {
+  t1: {
+    buildPrompt: () => {
+      const d = JSON.stringify(DATA.margin, null, 2);
+      return {
+        system: `You are a margin intelligence analyst for a $10M ecommerce business. Be direct and specific. No filler text. Flag anything above 2% margin erosion as HIGH priority.`,
+        user: `Here is last week's margin data:\n${d}\n\nIdentify the top 5 margin leakage risks. For each risk output exactly this structure:\n\nRISK [N]: [Short title]\nPRIORITY: HIGH|MED|LOW\nWHAT: [1 sentence — what is happening, e.g. discount too high, freight spike, COGS increase]\nAFFECTED: [SKU(s), channel, or customer segment]\nIMPACT: [$X estimated dollar impact on gross margin this week]\nACTION: [One specific action the owner can take today]\n\nSeparate each risk with ---`
+      };
+    }
+  },
+  t2: {
+    buildPrompt: () => {
+      const cd = JSON.stringify(DATA.campaigns, null, 2);
+      const md = JSON.stringify(DATA.sku_margins, null, 2);
+      return {
+        system: `You are a commercial analyst. Be precise with numbers. Return a markdown table followed by brief notes.`,
+        user: `Campaign data:\n${cd}\n\nProduct margin data:\n${md}\n\nFor each campaign:\n1. Calculate profit-adjusted ROAS = ROAS × (gross_margin_pct / 100)\n2. Flag campaigns with profit-adjusted ROAS below 1.2 as UNPROFITABLE\n3. Note if high-ROAS campaigns drive low-margin SKUs (GM < 25%)\n4. Recommend: CONTINUE, PAUSE, or RESTRUCTURE with one sentence of reasoning\n\nReturn ONLY this markdown table (no preamble):\n| Campaign | Spend | ROAS | GM% | Profit ROAS | Action | Note |\n|---|---|---|---|---|---|---|\n\nThen after the table, add 2-3 bullet points of key insights.`
+      };
+    }
+  },
+  t3: {
+    buildPrompt: () => {
+      const d = JSON.stringify(DATA.suppliers, null, 2);
+      return {
+        system: `You are a procurement analyst for a wholesale/ecommerce SMB. Be specific with dollar impacts. Keep output to one paragraph per supplier.`,
+        user: `Supplier cost data (last 90 days vs prior 90 days):\n${d}\n\nFor each supplier with cost movement greater than 3%:\n1. State the cost change in dollars and percentage\n2. Calculate weekly margin impact if sell prices stay flat (use weekly_units × cost_change)\n3. Recommend: ABSORB, PASS ON, or RENEGOTIATE — and why in one sentence\n4. Note consolidation opportunity if applicable\n\nFormat each supplier as:\nSUPPLIER: [name] | CHANGE: [+/-$X (+/-Y%)] | WEEKLY IMPACT: [-$X margin] | REC: ABSORB|PASS ON|RENEGOTIATE\n[One paragraph of reasoning]\n---\n\nOrder by descending dollar impact.`
+      };
+    }
+  },
+  t4: {
+    buildPrompt: () => {
+      const s = DATA.weekly_summary;
+      return {
+        system: `You are a commercial intelligence assistant. Write for a busy owner, not a CFO. Plain English, no jargon, direct.`,
+        user: `Write the weekly margin summary.\n\nData:\n- Revenue: $${s.revenue.toLocaleString()} vs prior week $${s.revenue_prior.toLocaleString()}\n- Gross margin %: ${s.gm_pct}% vs prior week ${s.gm_pct_prior}%\n- Top leakage sources: ${s.leakage_sources}\n- Marketing spend: $${s.ad_spend.toLocaleString()}, blended ROAS: ${s.roas}x\n- Freight costs: $${s.freight_total.toLocaleString()}\n- Open supplier alerts: ${s.supplier_alerts}\n\nWrite exactly 3 sections:\n\nSECTION 1 — WHAT HAPPENED (2-3 sentences only)\nSECTION 2 — NEEDS ATTENTION NOW (top 2 risks, each with $ impact, max 2 sentences each)\nSECTION 3 — ACTIONS TODAY (max 3 bullet points, each starting with a verb, each actionable today)\n\nTone: direct, clear, no padding.`
+      };
+    }
+  },
+  t5: {
+    buildPrompt: () => {
+      const d = JSON.stringify(DATA.pricing, null, 2);
+      return {
+        system: `You are a pricing analyst. Be specific with numbers. Confidence = High if data is clear, Med if 1-2 assumptions, Low if speculative.`,
+        user: `SKU data (last 30 days):\n${d}\n\nIdentify pricing opportunities. For each category below, find up to 3 SKUs:\n\nPRICE INCREASE candidates: GM% below category average AND conversion rate stable (within 10% of prior) AND avg_discount < 8%\nDISCOUNT REDUCTION candidates: avg_discount_pct above 12% — calculate what GM% would be at 5% discount\nBUNDLE candidates: identify 2 SKUs that are complementary AND combined margin below 32%\n\nReturn as three separate markdown tables with this format:\n\n**PRICE INCREASE**\n| SKU | Name | Current Price | Suggested Price | Margin Uplift | Confidence |\n|---|---|---|---|---|---|\n\n**DISCOUNT REDUCTION**\n| SKU | Name | Current Discount | Target Discount | GM% Improvement | Confidence |\n|---|---|---|---|---|---|\n\n**BUNDLE OPPORTUNITIES**\n| SKU A | SKU B | Bundle Price | Combined GM% | Uplift | Confidence |\n|---|---|---|---|---|---|\n\nNo preamble. Tables only, then 2 bullet points flagging items needing owner approval.`
+      };
+    }
+  }
+};
+
+// ═══════════════════════════════════════════════════
+//  TEMPLATE ENGINE — variable injection
+// ═══════════════════════════════════════════════════
+
+function fillTemplate(template, vars) {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, k) => {
+    const v = vars[k];
+    return v !== undefined ? (typeof v === 'object' ? JSON.stringify(v, null, 2) : v) : `[missing:${k}]`;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════
+
+function toggleCard(id) {
+  const body = document.getElementById(id);
+  const chev = document.getElementById('chev-'+id);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  // find and activate
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('active'); });
+}
+
+function setChip(tid, state) {
+  const chip = document.getElementById('chip-'+tid);
+  chip.className = 'status-chip';
+  const map = {idle:'chip-idle',running:'chip-running',done:'chip-done',error:'chip-error'};
+  const txt = {idle:'Not run yet',running:'Analysing…',done:'Done ✓',error:'Error'};
+  chip.classList.add(map[state]);
+  chip.textContent = txt[state];
+  // nav dot
+  const dot = document.getElementById('st-'+tid);
+  if (dot) {
+    dot.className = 'nav-status';
+    if (state === 'done') dot.classList.add('done');
+    if (state === 'error') dot.classList.add('error');
+    if (state === 'running') dot.classList.add('running');
+  }
+}
+
+function setLoading(tid, show) {
+  const load = document.getElementById('load-'+tid);
+  const render = document.getElementById('render-'+tid);
+  if (!load) return;
+  if (show) {
+    load.style.display = 'flex';
+    load.innerHTML = `<div class="loader"><span></span><span></span><span></span></div><span>AI is crunching your data… this takes about 10 seconds</span>`;
+    render.style.display = 'none';
+  } else {
+    load.style.display = 'none';
+    render.style.display = 'block';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  CLAUDE API CALL
+// ═══════════════════════════════════════════════════
+
+async function callClaude(system, user) {
+  if (!API_KEY) throw new Error('No API key. Paste your Groq key in the top bar.');
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 1500,
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user',   content: user   }
+      ]
+    })
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e?.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+// ═══════════════════════════════════════════════════
+//  OUTPUT PARSERS & RENDERERS
+// ═══════════════════════════════════════════════════
+
+function parseMarkdownTable(text) {
+  const lines = text.split('\n').filter(l => l.trim().startsWith('|'));
+  if (lines.length < 2) return null;
+  const header = lines[0].split('|').map(c=>c.trim()).filter(Boolean);
+  const body = lines.slice(2).map(l => l.split('|').map(c=>c.trim()).filter(Boolean));
+  return {header, body};
+}
+
+function renderT1(text) {
+  const blocks = text.split('---').map(s=>s.trim()).filter(Boolean);
+  const cards = blocks.map(block => {
+    const lines = block.split('\n').filter(Boolean);
+    const get = (key) => { const l = lines.find(x => x.startsWith(key+':')); return l ? l.slice(key.length+1).trim() : ''; };
+    const priority = get('PRIORITY').toUpperCase();
+    const title = get('RISK').replace(/^\d+:/,'').trim() || lines[0];
+    const what = get('WHAT');
+    const affected = get('AFFECTED');
+    const impact = get('IMPACT');
+    const action = get('ACTION');
+    const cls = priority==='HIGH' ? 'risk-high' : priority==='MED' ? 'risk-med' : 'risk-low';
+    const bcls = priority==='HIGH' ? 'badge-high' : priority==='MED' ? 'badge-med' : 'badge-low';
+    return `<div class="risk-card ${cls}">
+      <div class="risk-header">
+        <span class="risk-badge ${bcls}">${priority}</span>
+        <span class="risk-title">${title}</span>
+        <span class="risk-impact">${impact}</span>
+      </div>
+      <div class="risk-detail"><strong>What's happening:</strong> ${what}</div>
+      <div class="risk-detail"><strong>Affected:</strong> ${affected}</div>
+      ${action ? `<div class="ai-suggestion">
+        <div class="ai-suggestion-label">✦ AI Suggestion</div>
+        <div class="ai-suggestion-text">${action}</div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+  return `<div style="padding:16px">${cards || renderRaw(text)}</div>`;
+}
+
+function renderT2(text) {
+  const tableLines = text.split('\n').filter(l=>l.trim().startsWith('|'));
+  let tableHtml = '';
+  let notesHtml = '';
+
+  if (tableLines.length >= 3) {
+    const header = tableLines[0].split('|').map(c=>c.trim()).filter(Boolean);
+    const rows = tableLines.slice(2);
+    const actionIdx = header.findIndex(h=>h.toLowerCase().includes('action'));
+    const proRoasIdx = header.findIndex(h=>h.toLowerCase().includes('profit'));
+
+    tableHtml = `<div style="overflow-x:auto"><table class="out-table">
+      <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r=>{
+        const cells = r.split('|').map(c=>c.trim()).filter(Boolean);
+        const action = cells[actionIdx] || '';
+        const proRoas = parseFloat((cells[proRoasIdx]||'0').replace(/[^0-9.]/g,''));
+        const rowCls = proRoas > 0 && proRoas < 1.2 ? 'class="low-roas"' : '';
+        return `<tr ${rowCls}>${cells.map((c,i)=>{
+          if (i===actionIdx) {
+            const u = c.toUpperCase();
+            const cls = u.includes('CONTINUE')?'action-continue':u.includes('PAUSE')?'action-pause':'action-restructure';
+            return `<td><span class="${cls}">${c}</span></td>`;
+          }
+          return `<td>${c}</td>`;
+        }).join('')}</tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  }
+
+  const bulletLines = text.split('\n').filter(l=>l.trim().startsWith('-') || l.trim().startsWith('•') || l.trim().startsWith('*'));
+  if (bulletLines.length) {
+    notesHtml = `<div style="padding:14px 16px;border-top:1px solid var(--rule);background:var(--bg)">
+      <div class="ai-suggestion-label" style="margin-bottom:8px">✦ AI Insights</div>
+      ${bulletLines.map(l=>`<div class="exec-bullet">${l.replace(/^[-•*]\s*/,'')}</div>`).join('')}
+    </div>`;
+  }
+
+  return tableHtml ? tableHtml + notesHtml : renderRaw(text);
+}
+
+function renderT3(text) {
+  const blocks = text.split('---').map(s=>s.trim()).filter(Boolean);
+  const rendered = blocks.map(block => {
+    const firstLine = block.split('\n')[0];
+    const rest = block.split('\n').slice(1).join('\n').trim();
+    const nameMatch = firstLine.match(/SUPPLIER:\s*([^|]+)/);
+    const changeMatch = firstLine.match(/CHANGE:\s*([^|]+)/);
+    const impactMatch = firstLine.match(/WEEKLY IMPACT:\s*([^|]+)/);
+    const recMatch = firstLine.match(/REC:\s*(\w[\w\s]*)/);
+
+    if (!nameMatch) return `<div class="supplier-block"><div class="raw-output">${block}</div></div>`;
+
+    const name = nameMatch[1].trim();
+    const change = changeMatch ? changeMatch[1].trim() : '';
+    const impact = impactMatch ? impactMatch[1].trim() : '';
+    const rec = recMatch ? recMatch[1].trim().toUpperCase() : '';
+    const isIncrease = change.startsWith('+');
+    const recCls = rec.includes('ABSORB')?'rec-absorb':rec.includes('PASS')?'rec-pass':'rec-renegotiate';
+
+    return `<div class="supplier-block">
+      <div class="supplier-header">
+        <span class="supplier-name">${name}</span>
+        <span class="supplier-change ${isIncrease?'sup-increase':'sup-decrease'}">${change}</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--ink3)">Weekly impact: ${impact}</span>
+        <span class="supplier-rec ${recCls}">${rec}</span>
+      </div>
+      <div class="ai-suggestion">
+        <div class="ai-suggestion-label">✦ AI Suggestion</div>
+        <div class="ai-suggestion-text">${rest}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div style="padding:16px">${rendered || renderRaw(text)}</div>`;
+}
+
+function renderT4(text) {
+  const sections = [
+    {key:'SECTION 1',label:'What happened this week'},
+    {key:'SECTION 2',label:'What needs your attention right now'},
+    {key:'SECTION 3',label:'✦ AI — What to do today'},
+  ];
+
+  // Also handle AI sometimes outputting the section keys without numbers
+  const skipPhrases = ['WHAT HAPPENED','NEEDS ATTENTION NOW','ACTIONS TODAY','SECTION 1','SECTION 2','SECTION 3'];
+
+  let remaining = text;
+  let html = '<div style="padding:20px">';
+
+  sections.forEach((sec, idx) => {
+    const nextKey = sections[idx+1]?.key;
+    const start = remaining.indexOf(sec.key);
+    if (start === -1) return;
+    const end = nextKey ? remaining.indexOf(nextKey) : remaining.length;
+    const content = remaining.slice(start + sec.key.length, end > start ? end : remaining.length)
+      .replace(/^[\s—–:-]+/, '').trim();
+
+    const bulletLines = content.split('\n').filter(l => l.trim().match(/^[-•*▸]/));
+    const paraLines = content.split('\n').filter(l => {
+      const t = l.trim();
+      if (!t) return false;
+      if (t.match(/^[-•*▸]/)) return false;
+      // Skip if line is just a raw section label echo
+      if (skipPhrases.some(p => t.toUpperCase() === p)) return false;
+      return true;
+    });
+
+    html += `<div class="exec-section">
+      <div class="exec-section-label">${sec.label}</div>`;
+
+    if (bulletLines.length) {
+      html += bulletLines.map(l=>`<div class="exec-bullet">${l.replace(/^[-•*▸]\s*/,'')}</div>`).join('');
+    } else {
+      html += paraLines.map(l=>`<p class="exec-text">${l}</p>`).join('');
+    }
+    html += '</div>';
+  });
+
+  html += '</div>';
+  return html.includes('exec-section-label') ? html : `<div style="padding:20px">${renderRaw(text)}</div>`;
+}
+
+function renderT5(text) {
+  const sections = ['PRICE INCREASE','DISCOUNT REDUCTION','BUNDLE OPPORTUNITIES'];
+  let html = '<div style="padding:16px">';
+
+  sections.forEach(sec => {
+    const start = text.indexOf('**'+sec+'**');
+    if (start === -1) return;
+    const nextIdx = sections.indexOf(sec) + 1;
+    const nextKey = sections[nextIdx] ? '**'+sections[nextIdx]+'**' : null;
+    const end = nextKey ? text.indexOf(nextKey) : text.length;
+    const chunk = text.slice(start + sec.length + 4, end > start ? end : text.length);
+
+    const tableLines = chunk.split('\n').filter(l=>l.trim().startsWith('|'));
+    html += `<div class="pricing-type">${sec}</div>`;
+
+    if (tableLines.length >= 3) {
+      const header = tableLines[0].split('|').map(c=>c.trim()).filter(Boolean);
+      const rows = tableLines.slice(2);
+      const confIdx = header.findIndex(h=>h.toLowerCase().includes('confidence'));
+      html += `<div style="overflow-x:auto"><table class="out-table">
+        <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map(r=>{
+          const cells = r.split('|').map(c=>c.trim()).filter(Boolean);
+          return `<tr>${cells.map((c,i)=>{
+            if (i===confIdx) {
+              const u = c.toUpperCase();
+              const cls = u.includes('HIGH')?'conf-high':u.includes('MED')?'conf-med':'conf-low';
+              return `<td><span class="${cls}">${c}</span></td>`;
+            }
+            return `<td>${c}</td>`;
+          }).join('')}</tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+    } else {
+      html += `<div class="raw-output" style="padding:0 0 12px">${chunk.trim()}</div>`;
+    }
+  });
+
+  const bulletLines = text.split('\n').filter(l=>l.trim().match(/^[-•*]/));
+  if (bulletLines.length) {
+    html += `<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--rule)">
+      <div style="font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:8px">Owner approval required</div>
+      ${bulletLines.map(l=>`<div class="exec-bullet">${l.replace(/^[-•*]\s*/,'')}</div>`).join('')}
+    </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function renderRaw(text) {
+  const html = text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^[-•*▸]\s+/gm,'<div class="exec-bullet" style="margin-left:0">')
+    .replace(/\n/g,'<br>');
+  return `<div class="output-rendered raw-output" style="padding:16px">${html}</div>`;
+}
+
+const RENDERERS = {t1:renderT1, t2:renderT2, t3:renderT3, t4:renderT4, t5:renderT5};
+
+// ═══════════════════════════════════════════════════
+//  RUN TEMPLATE
+// ═══════════════════════════════════════════════════
+
+async function runTemplate(tid) {
+  if (!API_KEY) {
+    alert('Please paste your Groq key in the top bar first.');
+    return;
+  }
+
+  // Open card
+  const body = document.getElementById('c'+tid.slice(1));
+  const chev = document.getElementById('chev-c'+tid.slice(1));
+  body.classList.add('open');
+  if (chev) chev.classList.add('open');
+
+  setChip(tid, 'running');
+  setLoading(tid, true);
+  document.getElementById('btn-'+tid).disabled = true;
+
+  try {
+    const {system, user} = TEMPLATES[tid].buildPrompt();
+    const text = await callClaude(system, user);
+    const renderer = RENDERERS[tid];
+    const html = renderer ? renderer(text) : `<div class="output-rendered">${renderRaw(text)}</div>`;
+    document.getElementById('render-'+tid).innerHTML = html;
+    setChip(tid, 'done');
+  } catch(e) {
+    document.getElementById('render-'+tid).innerHTML = `<div class="error-box">❌ ${e.message}</div>`;
+    setChip(tid, 'error');
+  }
+
+  setLoading(tid, false);
+  document.getElementById('btn-'+tid).disabled = false;
+}
+
+async function runAll() {
+  if (!API_KEY) { alert('Paste your Groq key first.'); return; }
+  const btn = document.getElementById('run-all-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Running…';
+  for (const tid of ['t1','t2','t3','t4','t5']) {
+    await runTemplate(tid);
+  }
+  btn.disabled = false;
+  btn.textContent = '▶ Run All Templates';
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.getAttribute('onclick').includes(name)) b.classList.add('active');
+  });
+}
+
+renderAnomalies();
+
+// ═══════════════════════════════════════════════════
+//  CHARTS INIT
+// ═══════════════════════════════════════════════════
+
+function initCharts() {
+  const GREEN  = '#16a34a';
+  const GREEN2 = '#4ade80';
+  const RED    = '#c0392b';
+  const AMBER  = '#b35a00';
+  const BLUE   = '#2563eb';
+  const TEAL   = '#0891b2';
+  const PURPLE = '#7c3aed';
+  const ORANGE = '#ea580c';
+  const RULE   = '#c8dece';
+  const INK3   = '#6a8a70';
+
+  const WEEKS  = ['W16','W17','W18','W19','W20','W21','W22','W23'];
+
+  const baseOpts = {
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{
+      backgroundColor:'#1a2e20',titleFont:{family:'DM Mono',size:10},
+      bodyFont:{family:'DM Sans',size:11},padding:8,cornerRadius:6,
+    }},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9},color:INK3}},
+      y:{grid:{color:RULE+'80'},ticks:{font:{family:'DM Mono',size:9},color:INK3}}
+    }
+  };
+
+  // ── 1. Weekly Revenue sparkline ──
+  new Chart(document.getElementById('chart-revenue'),{
+    type:'line',
+    data:{
+      labels:WEEKS,
+      datasets:[{
+        data:[162000,171500,158000,185000,178000,192000,198200,214400],
+        borderColor:GREEN,borderWidth:2,pointRadius:2,pointBackgroundColor:GREEN,
+        tension:0.4,fill:true,
+        backgroundColor:(ctx)=>{
+          const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
+          g.addColorStop(0,'#16a34a28');g.addColorStop(1,'#16a34a00');return g;
+        }
+      }]
+    },
+    options:{...baseOpts,scales:{
+      x:{...baseOpts.scales.x},
+      y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
+    }}
+  });
+
+  // ── 2. Gross Margin % trend ──
+  new Chart(document.getElementById('chart-gm'),{
+    type:'line',
+    data:{
+      labels:WEEKS,
+      datasets:[{
+        data:[43.2,42.8,44.1,43.5,41.8,40.9,41.1,38.2],
+        borderColor:RED,borderWidth:2,pointRadius:2,pointBackgroundColor:RED,
+        tension:0.4,fill:true,
+        backgroundColor:(ctx)=>{
+          const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
+          g.addColorStop(0,'#c0392b22');g.addColorStop(1,'#c0392b00');return g;
+        }
+      }]
+    },
+    options:{...baseOpts,scales:{
+      x:{...baseOpts.scales.x},
+      y:{...baseOpts.scales.y,min:35,max:47,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
+    }}
+  });
+
+  // ── 3. Blended ROAS trend ──
+  new Chart(document.getElementById('chart-roas'),{
+    type:'line',
+    data:{
+      labels:WEEKS,
+      datasets:[{
+        data:[3.6,3.4,3.8,3.5,3.2,3.1,3.2,2.8],
+        borderColor:AMBER,borderWidth:2,pointRadius:2,pointBackgroundColor:AMBER,
+        tension:0.4,fill:true,
+        backgroundColor:(ctx)=>{
+          const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
+          g.addColorStop(0,'#b35a0022');g.addColorStop(1,'#b35a0000');return g;
+        }
+      }]
+    },
+    options:{...baseOpts,scales:{
+      x:{...baseOpts.scales.x},
+      y:{...baseOpts.scales.y,min:2,max:4.5,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'×'}}
+    }}
+  });
+
+  // ── 4. Freight / Revenue % trend ──
+  new Chart(document.getElementById('chart-freight'),{
+    type:'line',
+    data:{
+      labels:WEEKS,
+      datasets:[{
+        data:[3.8,3.9,4.0,4.1,4.2,4.3,4.5,5.3],
+        borderColor:ORANGE,borderWidth:2,pointRadius:2,pointBackgroundColor:ORANGE,
+        tension:0.4,fill:true,
+        backgroundColor:(ctx)=>{
+          const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
+          g.addColorStop(0,'#ea580c22');g.addColorStop(1,'#ea580c00');return g;
+        }
+      }]
+    },
+    options:{...baseOpts,scales:{
+      x:{...baseOpts.scales.x},
+      y:{...baseOpts.scales.y,min:3,max:6,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
+    }}
+  });
+
+  // ── 5. SKU Gross Margin — current vs prior (grouped bar) ──
+  const skus     = DATA.margin.map(d=>d.name.replace(' Pro','').replace(' Premium','').replace(' Elite','').replace(' Ultra',''));
+  const gmCurr   = DATA.margin.map(d=>d.gross_margin_pct);
+  const gmPrior  = DATA.margin.map(d=>d.prior_avg_gm_pct);
+  new Chart(document.getElementById('chart-sku-margin'),{
+    type:'bar',
+    data:{
+      labels:skus,
+      datasets:[
+        {label:'This week',data:gmCurr,backgroundColor:gmCurr.map(v=>v<25?RED+'cc':v<38?AMBER+'cc':GREEN+'cc'),borderRadius:4,borderSkipped:false},
+        {label:'Prior avg',data:gmPrior,backgroundColor:'#c8dece',borderRadius:4,borderSkipped:false}
+      ]
+    },
+    options:{...baseOpts,
+      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'DM Sans',size:10},color:INK3,boxWidth:10,padding:12}}},
+      scales:{
+        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30}},
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
+      }
+    }
+  });
+
+  // ── 6. Campaign Profit ROAS horizontal bar ──
+  const camps = DATA.campaigns.map(c=>c.campaign.replace(' – ','\n'));
+  const profRoas = DATA.campaigns.map(c=>{
+    const gm = DATA.sku_margins[c.primary_sku]?.gm_pct || 30;
+    return +(c.roas * gm/100).toFixed(2);
+  });
+  new Chart(document.getElementById('chart-campaign-roas'),{
+    type:'bar',
+    data:{
+      labels:camps,
+      datasets:[{
+        label:'Profit ROAS',
+        data:profRoas,
+        backgroundColor:profRoas.map(v=>v>=1.2?GREEN+'cc':RED+'cc'),
+        borderRadius:4,borderSkipped:false
+      }]
+    },
+    options:{...baseOpts,
+      indexAxis:'y',
+      plugins:{...baseOpts.plugins,
+        annotation:{annotations:{line1:{type:'line',x:1.2,borderColor:AMBER,borderWidth:1.5,borderDash:[4,3],label:{content:'Min 1.2×',display:true,font:{size:9,family:'DM Mono'},color:AMBER,position:'end'}}}}
+      },
+      scales:{
+        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,callback:v=>v+'×'}},
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{family:'DM Sans',size:10}}}
+      }
+    }
+  });
+
+  // ── 7. Revenue by channel donut ──
+  const chanMap = {};
+  DATA.margin.forEach(d=>{chanMap[d.channel]=(chanMap[d.channel]||0)+d.revenue;});
+  new Chart(document.getElementById('chart-channel'),{
+    type:'doughnut',
+    data:{
+      labels:Object.keys(chanMap),
+      datasets:[{data:Object.values(chanMap),backgroundColor:[GREEN,BLUE,TEAL],borderWidth:2,borderColor:'#f9fcfa',hoverOffset:4}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true,position:'bottom',labels:{font:{family:'DM Sans',size:10},color:INK3,boxWidth:10,padding:10}},
+        tooltip:{backgroundColor:'#1a2e20',titleFont:{family:'DM Mono',size:10},bodyFont:{family:'DM Sans',size:11},padding:8,cornerRadius:6,
+          callbacks:{label:ctx=>' $'+(ctx.raw/1000).toFixed(1)+'K ('+Math.round(ctx.raw/Object.values(chanMap).reduce((a,b)=>a+b,0)*100)+'%)'}}
+      }
+    }
+  });
+
+  // ── 8. Ad Spend vs Revenue by campaign ──
+  const shortCamps = DATA.campaigns.map(c=>c.campaign.split('–')[0].trim().split(' ').slice(0,2).join(' '));
+  new Chart(document.getElementById('chart-spend'),{
+    type:'bar',
+    data:{
+      labels:shortCamps,
+      datasets:[
+        {label:'Spend',data:DATA.campaigns.map(c=>c.spend),backgroundColor:RED+'99',borderRadius:4,borderSkipped:false},
+        {label:'Revenue',data:DATA.campaigns.map(c=>c.revenue),backgroundColor:GREEN+'99',borderRadius:4,borderSkipped:false}
+      ]
+    },
+    options:{...baseOpts,
+      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'DM Sans',size:10},color:INK3,boxWidth:10,padding:10}}},
+      scales:{
+        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30}},
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
+      }
+    }
+  });
+
+  // ── 9. Supplier cost change % ──
+  const supNames = DATA.suppliers.map(s=>s.supplier.split(' ')[0]);
+  const supChange = DATA.suppliers.map(s=>+((s.current_unit_cost-s.prior_unit_cost)/s.prior_unit_cost*100).toFixed(1));
+  new Chart(document.getElementById('chart-supplier'),{
+    type:'bar',
+    data:{
+      labels:supNames,
+      datasets:[{
+        label:'Cost change %',
+        data:supChange,
+        backgroundColor:supChange.map(v=>v>5?RED+'cc':v>0?AMBER+'cc':GREEN+'cc'),
+        borderRadius:4,borderSkipped:false
+      }]
+    },
+    options:{...baseOpts,
+      scales:{
+        x:{...baseOpts.scales.x},
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
+      }
+    }
+  });
+}
+
+// Load Chart.js then init
+(function(){
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+  s.onload=()=>initCharts();
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
