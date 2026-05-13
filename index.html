@@ -3,807 +3,1102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Margin Intelligence — Weekly Brief</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>MarginOptimizer — Week 23</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:       #f4f8f5;
-  --bg2:      #e8f0ea;
-  --bg3:      #d8e8db;
-  --ink:      #1a2e20;
-  --ink2:     #2f4a35;
-  --ink3:     #6a8a70;
-  --rule:     #c8dece;
-  --red:      #c0392b;
-  --red-bg:   #fdf2f0;
-  --red-rule: #f0b8b0;
-  --amber:    #b35a00;
-  --amb-bg:   #fdf6ee;
-  --amb-rule: #e8c08a;
-  --green:    #16a34a;
-  --grn-bg:   #f0faf4;
-  --grn-rule: #86efac;
-  --blue:     #1a4a8a;
-  --blu-bg:   #f0f4fb;
-  --blu-rule: #9ab8e0;
-  --accent:   #16a34a;
-  --nav-bg:   #1a2e20;
-  --nav-border: #243d28;
-  --mono:     'DM Mono', monospace;
-  --sans:     'DM Sans', sans-serif;
-  --display:  'Syne', sans-serif;
-}
-/* ── GLOBAL TYPOGRAPHY BASE ── */
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.65}
-h1,h2,h3,h4{font-family:var(--sans);font-weight:700;line-height:1.3;color:var(--ink)}
-p{margin-bottom:8px;color:var(--ink2)}
-strong{font-weight:600;color:var(--ink)}
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  /* Surfaces */
+  --bg:               #fafafa;
+  --surface:          #ffffff;
+  --surface-2:        #f4f5f7;
+  --surface-3:        #ebedf0;
 
-/* ── TOPBAR ── */
+  /* Ink (text) */
+  --ink-1:            #0d1117;
+  --ink-2:            #353a42;
+  --ink-3:            #6a7178;
+  --ink-4:            #9ba1a8;
+
+  /* Borders */
+  --line:             #e6e8eb;
+  --line-2:           #d4d7dc;
+
+  /* Brand & status */
+  --brand:            #0a8d4a;
+  --brand-soft:       #e8f5ed;
+  --brand-deep:       #066434;
+
+  --pos:              #0a8d4a;
+  --pos-soft:         #e8f5ed;
+  --neg:              #d33a2c;
+  --neg-soft:         #fdecea;
+  --warn:             #b25e09;
+  --warn-soft:        #fdf3e4;
+  --info:             #1e5fb8;
+  --info-soft:        #e8f0fa;
+
+  /* Platform colours (subtle, used only on pills) */
+  --shopify:          #0a8d4a;
+  --shopify-soft:     #e8f5ed;
+  --google:           #1e5fb8;
+  --google-soft:      #e8f0fa;
+  --xero:             #0a7da5;
+  --xero-soft:        #e3f2f9;
+
+  /* Type */
+  --font-sans:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:        'JetBrains Mono', monospace;
+
+  /* Radius & shadow */
+  --r-sm:             6px;
+  --r-md:             10px;
+  --r-lg:             14px;
+  --r-xl:             18px;
+  --shadow-1:         0 1px 2px rgba(13,17,23,.04), 0 1px 1px rgba(13,17,23,.02);
+  --shadow-2:         0 1px 3px rgba(13,17,23,.06), 0 4px 12px rgba(13,17,23,.04);
+  --shadow-3:         0 4px 8px rgba(13,17,23,.06), 0 12px 32px rgba(13,17,23,.06);
+
+  /* Layout */
+  --rail-w:           240px;
+  --content-max:      1320px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--ink-1);
+  font-size:14px;
+  line-height:1.55;
+  font-feature-settings:'cv11','ss01','ss03';
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:8px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-4)}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP BAR
+   ═══════════════════════════════════════════════════════════════ */
 .topbar{
-  display:flex;align-items:center;gap:16px;
-  padding:0 32px;height:52px;
-  background:var(--nav-bg);color:var(--bg);
-  border-bottom:2px solid var(--accent);
-  position:sticky;top:0;z-index:200;
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:24px;
+  padding:0 28px;height:60px;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--line);
 }
-.logo{font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:1px;color:#fff}
-.logo em{color:var(--accent);font-style:normal}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.api-input{
-  padding:6px 12px;border-radius:4px;
-  border:1px solid #2e4f34;background:#243d28;
-  color:#c8e6cc;font-family:var(--mono);font-size:11px;width:220px;outline:none;
-}
-.api-input:focus{border-color:var(--accent)}
-.run-all-btn{
-  padding:7px 18px;background:var(--accent);color:#fff;
-  border:none;border-radius:4px;font-family:var(--display);
-  font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;
-  transition:opacity .15s;
-}
-.run-all-btn:hover:not(:disabled){opacity:.85}
-.run-all-btn:disabled{opacity:.4;cursor:not-allowed}
-.week-badge{font-family:var(--mono);font-size:10px;color:#888;letter-spacing:.5px}
-
-/* ── LAYOUT ── */
-.shell{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - 52px);overflow:hidden}
-.nav{background:var(--nav-bg);padding:24px 0;height:100%;overflow-y:auto}
-.nav-section{padding:0 0 20px;border-bottom:1px solid var(--nav-border);margin-bottom:20px}
-.nav-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#555;padding:0 20px 10px;text-transform:uppercase}
-.nav-item{
+.brand{
   display:flex;align-items:center;gap:10px;
-  padding:8px 20px;cursor:pointer;
-  font-size:12px;color:#888;transition:all .15s;border:none;background:none;width:100%;text-align:left;
+  font-weight:700;font-size:15px;letter-spacing:-.01em;
 }
-.nav-item:hover{color:#c8e6cc;background:#243d28}
-.nav-item.active{color:#fff;background:#243d28;border-left:2px solid var(--accent)}
-.nav-status{width:6px;height:6px;border-radius:50%;background:#333;flex-shrink:0}
-.nav-status.done{background:var(--green)}
-.nav-status.error{background:var(--red)}
-.nav-status.running{background:var(--amber);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--brand) 0%,var(--brand-deep) 100%);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:13px;
+}
+.brand em{font-style:normal;color:var(--ink-3);font-weight:500}
+.context-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:99px;
+  background:var(--surface-2);
+  font-size:12px;font-weight:500;color:var(--ink-2);
+}
+.context-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--pos)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
 
-/* ── ANOMALY SIDEBAR ── */
-.anomaly-bar{padding:0 20px}
-.anom-item{
-  padding:8px 10px;border-radius:4px;margin-bottom:6px;
-  border-left:2px solid transparent;font-size:11px;
+.api-field{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:8px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  transition:all .15s;
 }
-.anom-high{background:#2a1a18;border-color:var(--red);color:#f0a0a0}
-.anom-med{background:#2a2010;border-color:var(--amber);color:#e8c070}
-.anom-metric{font-family:var(--mono);font-size:10px;margin-bottom:2px;font-weight:500}
-.anom-delta{font-family:var(--mono);font-size:10px;color:#5a7a60}
+.api-field:focus-within{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-soft)}
+.api-field svg{flex-shrink:0;color:var(--ink-3)}
+.api-input{
+  border:none;background:transparent;outline:none;
+  font-size:12px;width:200px;color:var(--ink-1);
+  font-family:var(--font-mono);
+}
+.api-input::placeholder{color:var(--ink-4)}
 
-/* ── MAIN ── */
-.main{height:100%;overflow-y:auto;display:flex;flex-direction:column}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:8px;
+  background:var(--ink-1);color:#fff;
+  font-size:13px;font-weight:600;letter-spacing:-.005em;
+  transition:all .15s;box-shadow:var(--shadow-1);
+}
+.btn-primary:hover:not(:disabled){background:var(--ink-2);transform:translateY(-1px);box-shadow:var(--shadow-2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary svg{width:14px;height:14px}
 
-/* ── HERO KPI ── */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-bottom:20px}
-.kpi{background:var(--bg2);padding:18px 20px}
-.kpi-label{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink3);margin-bottom:4px}
-.kpi-value{font-family:var(--sans);font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
-.kpi-delta{font-family:var(--sans);font-size:11px;font-weight:500;margin-top:4px}
-.delta-up{color:var(--green)}
-.delta-dn{color:var(--red)}
-.delta-nt{color:var(--ink3)}
+/* ═══════════════════════════════════════════════════════════════
+   SHELL: rail + content
+   ═══════════════════════════════════════════════════════════════ */
+.shell{
+  display:grid;
+  grid-template-columns:var(--rail-w) 1fr;
+  min-height:calc(100vh - 60px);
+}
 
-/* ── TEMPLATE CARD ── */
-.template-card{
-  background:#f9fcfa;border:1px solid var(--rule);border-radius:8px;
-  margin-bottom:24px;overflow:hidden;
+/* ── Side rail (anchor navigation) ── */
+.rail{
+  position:sticky;top:60px;
+  height:calc(100vh - 60px);
+  padding:28px 18px;
+  border-right:1px solid var(--line);
+  background:var(--surface);
+  overflow-y:auto;
 }
-.card-header{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 20px;border-bottom:1px solid var(--rule);
-  background:var(--bg2);cursor:pointer;
+.rail-section{margin-bottom:28px}
+.rail-section:last-child{margin-bottom:0}
+.rail-label{
+  font-size:11px;font-weight:600;
+  color:var(--ink-4);text-transform:uppercase;letter-spacing:.05em;
+  padding:0 10px 10px;
+  display:flex;align-items:center;gap:6px;
 }
-.card-header:hover{background:var(--bg3)}
-.t-num{
-  font-family:var(--sans);font-size:11px;font-weight:800;
-  color:var(--accent);letter-spacing:1px;min-width:20px;
+.rail-link{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:7px;
+  font-size:13px;font-weight:500;color:var(--ink-2);
+  cursor:pointer;text-decoration:none;
+  transition:all .12s;width:100%;text-align:left;
 }
-.card-title{font-family:var(--display);font-size:13px;font-weight:700;flex:1}
-.card-desc{font-size:11px;color:var(--ink3)}
-.card-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.rail-link:hover{background:var(--surface-2);color:var(--ink-1)}
+.rail-link.active{background:var(--surface-2);color:var(--ink-1);font-weight:600}
+.rail-link svg{width:15px;height:15px;color:var(--ink-3);flex-shrink:0}
+.rail-link.active svg{color:var(--brand)}
+.rail-link-count{
+  margin-left:auto;font-size:11px;font-weight:600;
+  color:var(--ink-4);font-family:var(--font-mono);
+}
+.rail-link.has-alert .rail-link-count{
+  background:var(--neg-soft);color:var(--neg);
+  padding:1px 7px;border-radius:99px;
+}
+
+/* Anomaly mini-cards in rail */
+.anomalies{display:flex;flex-direction:column;gap:6px;padding:0 4px}
+.anomaly-mini{
+  display:flex;flex-direction:column;gap:2px;
+  padding:9px 11px;border-radius:8px;
+  background:var(--surface-2);
+  border-left:2px solid var(--ink-4);
+  font-size:12px;
+}
+.anomaly-mini.anom-high{border-left-color:var(--neg);background:var(--neg-soft)}
+.anomaly-mini.anom-med{border-left-color:var(--warn);background:var(--warn-soft)}
+.anomaly-mini-title{font-weight:600;color:var(--ink-1);font-size:12.5px}
+.anomaly-mini-delta{font-size:11px;color:var(--ink-3);font-family:var(--font-mono)}
+.anomaly-mini.anom-high .anomaly-mini-delta{color:var(--neg)}
+.anomaly-mini.anom-med .anomaly-mini-delta{color:var(--warn)}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════════════════════════════ */
+.content{padding:36px 40px 80px;max-width:var(--content-max)}
+
+/* ── Page header ── */
+.page-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:24px;margin-bottom:32px;
+}
+.page-head-l{flex:1;min-width:0}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;color:var(--ink-3);
+  margin-bottom:8px;letter-spacing:.01em;
+}
+.eyebrow::before{content:'';width:14px;height:1.5px;background:var(--brand);border-radius:2px}
+.page-title{
+  font-size:30px;font-weight:700;letter-spacing:-.025em;
+  color:var(--ink-1);line-height:1.15;margin-bottom:8px;
+}
+.page-sub{font-size:14px;color:var(--ink-3);max-width:640px}
+
+.data-source-row{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:12px;
+}
+.data-source-row-label{color:var(--ink-4);margin-right:2px}
+.platform-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px;border-radius:99px;
+  font-size:11.5px;font-weight:500;
+  background:var(--surface);border:1px solid var(--line);
+}
+.platform-pill .dot{width:6px;height:6px;border-radius:50%}
+.platform-pill.shopify{color:var(--shopify);background:var(--shopify-soft);border-color:transparent}
+.platform-pill.shopify .dot{background:var(--shopify)}
+.platform-pill.google{color:var(--google);background:var(--google-soft);border-color:transparent}
+.platform-pill.google .dot{background:var(--google)}
+.platform-pill.xero{color:var(--xero);background:var(--xero-soft);border-color:transparent}
+.platform-pill.xero .dot{background:var(--xero)}
+
+/* ── Section blocks ── */
+.section{margin-bottom:48px;scroll-margin-top:80px}
+.section:last-child{margin-bottom:0}
+.section-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line);
+}
+.section-head-l{flex:1;min-width:0}
+.section-title{
+  font-size:18px;font-weight:700;letter-spacing:-.015em;
+  color:var(--ink-1);margin-bottom:4px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:6px;
+  background:var(--surface-2);color:var(--ink-3);
+  font-size:11px;font-weight:600;font-family:var(--font-mono);
+}
+.section-sub{font-size:13px;color:var(--ink-3)}
+
+/* ═══════════════════════════════════════════════════════════════
+   KPI HERO BENTO
+   ═══════════════════════════════════════════════════════════════ */
+.kpi-bento{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr 1fr;
+  gap:14px;
+}
+.kpi-tile{
+  position:relative;
+  padding:22px 24px;border-radius:var(--r-lg);
+  background:var(--surface);border:1px solid var(--line);
+  transition:all .18s;display:flex;flex-direction:column;gap:6px;
+  min-height:128px;
+}
+.kpi-tile:hover{box-shadow:var(--shadow-2);transform:translateY(-1px)}
+.kpi-tile.hero{
+  background:linear-gradient(135deg,var(--ink-1) 0%,#1d2329 100%);
+  border-color:transparent;color:#fff;
+}
+.kpi-tile.hero .kpi-label,.kpi-tile.hero .kpi-foot{color:rgba(255,255,255,.65)}
+.kpi-tile.hero .kpi-value{color:#fff}
+.kpi-label{
+  font-size:12px;font-weight:500;color:var(--ink-3);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.kpi-value{
+  font-size:32px;font-weight:700;letter-spacing:-.02em;
+  color:var(--ink-1);line-height:1.1;margin-top:4px;
+  font-variant-numeric:tabular-nums;
+}
+.kpi-delta{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;
+  padding:3px 8px;border-radius:99px;width:fit-content;
+  font-family:var(--font-mono);
+}
+.kpi-delta.pos{color:var(--pos);background:var(--pos-soft)}
+.kpi-delta.neg{color:var(--neg);background:var(--neg-soft)}
+.kpi-delta.warn{color:var(--warn);background:var(--warn-soft)}
+.kpi-tile.hero .kpi-delta.pos{background:rgba(10,141,74,.2);color:#7ee8a8}
+.kpi-foot{font-size:11.5px;color:var(--ink-4);margin-top:auto}
+
+/* ═══════════════════════════════════════════════════════════════
+   CHARTS GRID
+   ═══════════════════════════════════════════════════════════════ */
+.charts-grid{display:grid;gap:14px}
+.charts-grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.charts-grid.cols-2{grid-template-columns:1fr 1fr}
+.charts-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.charts-grid + .charts-grid{margin-top:14px}
+
+.chart-card{
+  position:relative;
+  padding:18px 20px;border-radius:var(--r-lg);
+  background:var(--surface);border:1px solid var(--line);
+  transition:all .18s;
+}
+.chart-card:hover{box-shadow:var(--shadow-2)}
+.chart-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.chart-card-title{font-size:13px;font-weight:600;color:var(--ink-1);line-height:1.3}
+.chart-card-sub{font-size:11px;color:var(--ink-4);margin-bottom:14px}
+.chart-trend{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;
+  padding:2px 7px;border-radius:99px;
+  font-family:var(--font-mono);flex-shrink:0;
+}
+.chart-trend.pos{color:var(--pos);background:var(--pos-soft)}
+.chart-trend.neg{color:var(--neg);background:var(--neg-soft)}
+.chart-trend.warn{color:var(--warn);background:var(--warn-soft)}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYSIS — Platform tabs + cards
+   ═══════════════════════════════════════════════════════════════ */
+.platform-switcher{
+  display:flex;gap:4px;padding:4px;
+  background:var(--surface-2);border-radius:10px;
+  margin-bottom:24px;width:fit-content;
+}
+.platform-switcher button{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:7px;
+  font-size:13px;font-weight:500;color:var(--ink-3);
+  transition:all .15s;
+}
+.platform-switcher button:hover{color:var(--ink-1)}
+.platform-switcher button.active{background:var(--surface);color:var(--ink-1);font-weight:600;box-shadow:var(--shadow-1)}
+.platform-switcher .pdot{width:7px;height:7px;border-radius:50%}
+
+.platform-panel{display:none}
+.platform-panel.active{display:block}
+
+.platform-summary{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-radius:var(--r-md);
+  background:var(--surface-2);margin-bottom:18px;
+}
+.platform-summary-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.platform-summary-icon.shopify{background:var(--shopify-soft);color:var(--shopify)}
+.platform-summary-icon.google{background:var(--google-soft);color:var(--google)}
+.platform-summary-icon.xero{background:var(--xero-soft);color:var(--xero)}
+.platform-summary-icon.all{background:var(--brand-soft);color:var(--brand)}
+.platform-summary-text{flex:1;min-width:0}
+.platform-summary-title{font-size:14px;font-weight:600;color:var(--ink-1);margin-bottom:2px}
+.platform-summary-sub{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+
+/* ── Analysis card ── */
+.analysis-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);margin-bottom:14px;overflow:hidden;
+  transition:box-shadow .18s;
+}
+.analysis-card:hover{box-shadow:var(--shadow-1)}
+.analysis-card.is-running{box-shadow:0 0 0 2px var(--brand-soft),var(--shadow-1)}
+
+.card-head{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 22px;cursor:pointer;
+  user-select:none;transition:background .15s;
+}
+.card-head:hover{background:var(--surface-2)}
+.card-emoji{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.card-meta{flex:1;min-width:0}
+.card-title{font-size:14.5px;font-weight:600;color:var(--ink-1);letter-spacing:-.005em;margin-bottom:3px}
+.card-sub{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.card-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+
+/* Status chip */
+.status-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:99px;
+  font-size:11.5px;font-weight:500;
+  background:var(--surface-2);color:var(--ink-3);
+}
+.status-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ink-4)}
+.status-chip.chip-running{background:var(--info-soft);color:var(--info)}
+.status-chip.chip-running::before{background:var(--info);animation:pulse 1.4s infinite}
+.status-chip.chip-done{background:var(--pos-soft);color:var(--pos)}
+.status-chip.chip-done::before{background:var(--pos)}
+.status-chip.chip-error{background:var(--neg-soft);color:var(--neg)}
+.status-chip.chip-error::before{background:var(--neg)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* Run button (analysis cards) */
 .run-btn{
-  padding:5px 14px;border:1px solid var(--rule);border-radius:4px;
-  background:#f9fcfa;color:var(--ink2);font-family:var(--sans);font-size:11px;
-  cursor:pointer;transition:all .15s;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:7px;
+  font-size:12.5px;font-weight:600;
+  background:var(--ink-1);color:#fff;
+  transition:all .15s;
 }
-.run-btn:hover:not(:disabled){background:var(--accent);color:#fff;border-color:var(--accent)}
-.run-btn:disabled{opacity:.4;cursor:not-allowed}
-.card-body{padding:20px;display:none}
-.card-body.open{display:block}
+.run-btn:hover:not(:disabled){background:var(--ink-2);transform:translateY(-1px)}
+.run-btn:disabled{opacity:.5;cursor:not-allowed}
+.run-btn svg{width:11px;height:11px}
 
-/* ── DATA PREVIEW ── */
-.data-preview{
-  background:var(--bg);border:1px solid var(--rule);border-radius:6px;
-  padding:12px 14px;margin-bottom:16px;overflow-x:auto;
+.chev{
+  width:24px;height:24px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-4);transition:transform .2s;
 }
-.data-preview pre{font-family:var(--mono);font-size:10px;color:var(--ink2);white-space:pre-wrap;word-break:break-word}
+.chev.open{transform:rotate(180deg)}
+.chev svg{width:12px;height:12px}
 
-/* ── OUTPUT ── */
-.output-area{
-  border:1px solid var(--rule);border-radius:6px;overflow:hidden;
-  min-height:60px;
+.card-body{
+  display:none;padding:0 22px 22px;
+  border-top:1px solid var(--line);
 }
+.card-body.open{display:block;padding-top:18px}
+
+/* Empty / loading state */
+.empty-state{
+  text-align:center;padding:40px 24px;
+  background:var(--surface-2);border-radius:var(--r-md);
+}
+.empty-state-icon{font-size:28px;margin-bottom:10px;opacity:.7}
+.empty-state-title{font-size:14px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.empty-state-desc{font-size:13px;color:var(--ink-3);max-width:440px;margin:0 auto;line-height:1.6}
+.empty-state-desc strong{color:var(--ink-2);font-weight:600}
+
 .output-loading{
-  padding:24px;text-align:center;
-  font-family:var(--mono);font-size:11px;color:var(--ink3);
-  display:flex;flex-direction:column;align-items:center;gap:10px;
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  padding:40px 24px;color:var(--ink-3);font-size:13.5px;
 }
-.loader{display:flex;gap:5px}
-.loader span{width:8px;height:8px;border-radius:50%;background:var(--rule);animation:dots .8s infinite}
+.loader{display:inline-flex;gap:5px}
+.loader span{
+  width:7px;height:7px;border-radius:50%;background:var(--brand);
+  animation:bounce 1.2s infinite;
+}
 .loader span:nth-child(2){animation-delay:.15s}
 .loader span:nth-child(3){animation-delay:.3s}
-@keyframes dots{0%,60%,100%{transform:translateY(0);background:var(--rule)}30%{transform:translateY(-5px);background:var(--ink3)}}
-.output-rendered{padding:20px}
+@keyframes bounce{0%,80%,100%{transform:scale(.5);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-/* ── RENDERED OUTPUT STYLES ── */
+/* ═══════════════════════════════════════════════════════════════
+   AI OUTPUT RENDERING
+   ═══════════════════════════════════════════════════════════════ */
 .risk-card{
-  border:1px solid var(--rule);border-radius:6px;padding:14px 16px;margin-bottom:10px;
-  border-left:3px solid var(--rule);
+  border-radius:var(--r-md);padding:18px 20px;
+  margin-bottom:12px;border:1px solid var(--line);
+  background:var(--surface);
 }
-.risk-high{border-left-color:var(--red);background:var(--red-bg)}
-.risk-med{border-left-color:var(--amber);background:var(--amb-bg)}
-.risk-low{border-left-color:var(--green);background:var(--grn-bg)}
-.risk-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.risk-card.risk-high{border-left:3px solid var(--neg)}
+.risk-card.risk-med{border-left:3px solid var(--warn)}
+.risk-card.risk-low{border-left:3px solid var(--ink-4)}
+.risk-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .risk-badge{
-  padding:2px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.5px;
+  display:inline-flex;align-items:center;
+  padding:3px 9px;border-radius:99px;
+  font-size:10.5px;font-weight:700;letter-spacing:.03em;
 }
-.badge-high{background:var(--red);color:#fff}
-.badge-med{background:var(--amber);color:#fff}
-.badge-low{background:var(--green);color:#fff}
-/* ── RISK CARDS ── */
-.risk-title{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink)}
-.risk-impact{font-family:var(--sans);font-size:12px;font-weight:600;margin-left:auto;white-space:nowrap}
-.risk-high .risk-impact{color:var(--red)}
-.risk-med .risk-impact{color:var(--amber)}
-.risk-detail{font-size:13px;color:var(--ink2);margin-bottom:5px;line-height:1.6}
-.risk-action{
-  display:flex;align-items:flex-start;gap:6px;
-  font-size:12px;color:var(--blue);background:var(--blu-bg);
-  border:1px solid var(--blu-rule);border-radius:4px;padding:8px 12px;margin-top:8px;
+.badge-high{background:var(--neg-soft);color:var(--neg)}
+.badge-med{background:var(--warn-soft);color:var(--warn)}
+.badge-low{background:var(--surface-2);color:var(--ink-3)}
+.risk-title{font-size:14px;font-weight:600;color:var(--ink-1);flex:1;min-width:0}
+.risk-impact{
+  font-size:12.5px;font-weight:600;
+  font-variant-numeric:tabular-nums;font-family:var(--font-mono);
 }
-.risk-action::before{content:"→";font-weight:700;flex-shrink:0}
+.risk-high .risk-impact{color:var(--neg)}
+.risk-med .risk-impact{color:var(--warn)}
+.risk-detail{font-size:13px;color:var(--ink-2);line-height:1.6;margin-bottom:6px}
+.risk-detail strong{color:var(--ink-1);font-weight:600}
 
-/* ── OUTPUT TABLE ── */
-.out-table{width:100%;border-collapse:collapse;font-size:13px}
-.out-table th{
-  text-align:left;padding:10px 12px;
-  font-family:var(--sans);font-size:11px;font-weight:700;
-  color:var(--ink3);border-bottom:2px solid var(--rule);background:var(--bg2);
-  letter-spacing:0;text-transform:none;
-}
-.out-table td{padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:13px;color:var(--ink2)}
-.out-table tr:last-child td{border-bottom:none}
-.out-table tr:hover td{background:var(--bg)}
-.action-continue{color:var(--green);font-weight:700;font-size:12px}
-.action-pause{color:var(--red);font-weight:700;font-size:12px}
-.action-restructure{color:var(--amber);font-weight:700;font-size:12px}
-.low-roas{background:var(--red-bg) !important}
-
-/* ── EXEC SUMMARY ── */
-.exec-section{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--rule)}
-.exec-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.exec-section-label{
-  font-family:var(--sans);font-size:13px;font-weight:700;
-  color:var(--accent);margin-bottom:10px;
-  display:flex;align-items:center;gap:8px;
-}
-.exec-section-label::before{content:'';display:inline-block;width:3px;height:14px;background:var(--accent);border-radius:2px;flex-shrink:0}
-.exec-text{font-size:14px;line-height:1.75;color:var(--ink2);margin-bottom:6px}
-.exec-bullet{
-  display:flex;gap:10px;margin-bottom:8px;
-  font-size:14px;color:var(--ink2);line-height:1.65;
-}
-.exec-bullet::before{content:"•";color:var(--accent);flex-shrink:0;font-size:16px;line-height:1.4}
-
-/* ── PRICING SECTION ── */
-.pricing-type{
-  font-family:var(--sans);font-size:13px;font-weight:700;
-  color:var(--ink2);margin:20px 0 10px;
-  padding:8px 12px;background:var(--bg2);border-radius:6px;
-  border-left:3px solid var(--accent);
-}
-.pricing-type:first-child{margin-top:0}
-.conf-high{color:var(--green);font-weight:700;font-size:12px}
-.conf-med{color:var(--amber);font-weight:700;font-size:12px}
-.conf-low{color:var(--ink3);font-weight:600;font-size:12px}
-
-/* ── SUPPLIER BLOCKS ── */
-.supplier-block{
-  border:1px solid var(--rule);border-radius:8px;padding:16px 18px;margin-bottom:12px;
-}
-.supplier-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.supplier-name{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink)}
-.supplier-change{font-family:var(--sans);font-size:13px;font-weight:600}
-.sup-increase{color:var(--red)}
-.sup-decrease{color:var(--green)}
-.supplier-rec{
-  display:inline-block;padding:3px 12px;border-radius:20px;
-  font-family:var(--sans);font-size:11px;font-weight:700;margin-left:auto;
-}
-.rec-absorb{background:var(--grn-bg);color:var(--green);border:1px solid var(--grn-rule)}
-.rec-pass{background:var(--blu-bg);color:var(--blue);border:1px solid var(--blu-rule)}
-.rec-renegotiate{background:var(--red-bg);color:var(--red);border:1px solid var(--red-rule)}
-
-/* ── RAW OUTPUT FALLBACK ── */
-.raw-output{
-  font-family:var(--sans);font-size:13px;line-height:1.75;color:var(--ink2);
-  white-space:pre-wrap;word-break:break-word;
-}
-.raw-output strong,.raw-output b{font-weight:700;color:var(--ink)}
-.error-box{
-  background:var(--red-bg);border:1px solid var(--red-rule);border-radius:6px;
-  padding:14px 16px;color:var(--red);font-family:var(--sans);font-size:13px;
-}
-
-/* ── AI SUGGESTION BOX ── */
+/* AI suggestion box */
 .ai-suggestion{
-  background:#f0faf4;
-  border:1.5px solid #86efac;border-radius:8px;padding:14px 16px;margin-top:12px;
+  margin-top:12px;padding:14px 16px;
+  background:linear-gradient(135deg,var(--brand-soft) 0%,#f4faf6 100%);
+  border:1px solid #cae8d6;border-radius:var(--r-md);
 }
 .ai-suggestion-label{
   display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--sans);font-size:11px;font-weight:700;
-  color:#16a34a;margin-bottom:8px;
-  background:#dcfce7;padding:3px 10px;border-radius:20px;border:1px solid #86efac;
+  font-size:11px;font-weight:700;color:var(--brand-deep);
+  background:#fff;padding:3px 10px;border-radius:99px;
+  margin-bottom:8px;border:1px solid #cae8d6;
 }
-.ai-suggestion-label::before{content:"✦";font-size:10px}
-.ai-suggestion-text{font-size:13px;color:var(--ink2);line-height:1.7}
+.ai-suggestion-label::before{content:'✦';color:var(--brand)}
+.ai-suggestion-text{font-size:13.5px;color:var(--ink-2);line-height:1.65}
 
-/* ── DATA SOURCE BAR ── */
-.data-sources{
-  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
-  padding:8px 32px;background:var(--bg2);border-bottom:1px solid var(--rule);
-  flex-shrink:0;
+/* Table */
+.out-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.out-table th{
+  padding:10px 14px;text-align:left;
+  font-size:11px;font-weight:600;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.04em;
+  background:var(--surface-2);border-bottom:1px solid var(--line);
 }
-.main-content{flex:1;overflow-y:auto;min-height:0}
-.ds-label{font-family:var(--mono);font-size:9px;letter-spacing:.8px;color:var(--ink3);text-transform:uppercase;margin-right:4px}
-.ds-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
-  border:1px solid transparent;
+.out-table th:first-child{border-top-left-radius:var(--r-sm)}
+.out-table th:last-child{border-top-right-radius:var(--r-sm)}
+.out-table td{
+  padding:11px 14px;border-bottom:1px solid var(--line);
+  color:var(--ink-2);vertical-align:middle;
 }
-.ds-shopify{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7}
-.ds-google{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
-.ds-xero{background:#e8f4fd;color:#0277bd;border-color:#81d4fa}
-.ds-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.out-table tr:last-child td{border-bottom:none}
+.out-table tr:hover td{background:var(--surface-2)}
+.out-table tr.low-roas td{background:var(--neg-soft)}
+.out-table tr.low-roas:hover td{background:#fbe2dd}
+.action-continue{color:var(--pos);font-weight:600;font-size:12px;font-family:var(--font-mono);padding:2px 8px;background:var(--pos-soft);border-radius:99px}
+.action-pause{color:var(--neg);font-weight:600;font-size:12px;font-family:var(--font-mono);padding:2px 8px;background:var(--neg-soft);border-radius:99px}
+.action-restructure{color:var(--warn);font-weight:600;font-size:12px;font-family:var(--font-mono);padding:2px 8px;background:var(--warn-soft);border-radius:99px}
 
-/* ── CARD HEADERS ── */
-.card-title-block{display:flex;flex-direction:column;gap:3px;flex:1}
-.card-title{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--ink)}
-.card-subtitle{font-size:12px;color:var(--ink3);font-weight:400;line-height:1.5}
-
-/* ── KPI TILES ── */
-.kpi-label{font-family:var(--sans);font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink3);margin-bottom:4px}
-.kpi-value{font-family:var(--sans);font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
-.kpi-delta{font-family:var(--sans);font-size:11px;margin-top:4px;font-weight:500}
-
-/* ── NAV LABELS ── */
-.nav-label{font-family:var(--sans);font-size:10px;letter-spacing:.5px;color:#556;padding:0 20px 10px;text-transform:uppercase;font-weight:600}
-.nav-item{
+/* Exec summary */
+.exec-section{padding:18px 0;border-bottom:1px solid var(--line)}
+.exec-section:first-child{padding-top:4px}
+.exec-section:last-child{border-bottom:none}
+.exec-section-label{
   display:flex;align-items:center;gap:10px;
-  padding:9px 20px;cursor:pointer;
-  font-size:13px;font-weight:500;color:#8a9a8e;transition:all .15s;border:none;background:none;width:100%;text-align:left;
+  font-size:13px;font-weight:700;color:var(--ink-1);margin-bottom:10px;
 }
-.nav-item .tnum{font-family:var(--sans);font-size:11px;color:var(--accent);margin-left:auto;font-weight:600}
+.exec-section-label::before{
+  content:'';width:4px;height:16px;background:var(--brand);border-radius:2px;
+}
+.exec-text{font-size:14px;line-height:1.7;color:var(--ink-2);margin-bottom:8px}
+.exec-text strong{color:var(--ink-1);font-weight:600}
+.exec-bullet{
+  display:flex;gap:10px;font-size:13.5px;color:var(--ink-2);
+  line-height:1.65;margin-bottom:8px;padding-left:2px;
+}
+.exec-bullet::before{
+  content:'';flex-shrink:0;width:5px;height:5px;
+  border-radius:50%;background:var(--brand);margin-top:9px;
+}
 
-/* ── CHART CARDS ── */
-.chart-card-title{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:2px}
-.chart-card-sub{font-size:11px;color:var(--ink3);margin-bottom:12px;font-weight:400}
+/* Pricing */
+.pricing-type{
+  font-size:12.5px;font-weight:700;color:var(--ink-1);
+  margin:20px 0 10px;padding:10px 14px;
+  background:var(--surface-2);border-radius:var(--r-sm);
+  border-left:3px solid var(--brand);
+}
+.pricing-type:first-child{margin-top:0}
+.conf-high{color:var(--pos);font-weight:600;font-size:12px;font-family:var(--font-mono)}
+.conf-med{color:var(--warn);font-weight:600;font-size:12px;font-family:var(--font-mono)}
+.conf-low{color:var(--ink-3);font-weight:600;font-size:12px;font-family:var(--font-mono)}
 
-/* ── DATA SOURCE BADGES ── */
-.ds-label{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--ink3);margin-right:4px}
-.ds-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
-  border:1px solid transparent;
+/* Supplier blocks */
+.supplier-block{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:18px 20px;margin-bottom:12px;
+}
+.supplier-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.supplier-name{font-size:14px;font-weight:600;color:var(--ink-1)}
+.supplier-change{font-size:13px;font-weight:600;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.sup-increase{color:var(--neg)}
+.sup-decrease{color:var(--pos)}
+.supplier-rec{
+  margin-left:auto;display:inline-flex;align-items:center;
+  padding:4px 11px;border-radius:99px;
+  font-size:11px;font-weight:700;letter-spacing:.02em;
+}
+.rec-absorb{background:var(--pos-soft);color:var(--pos)}
+.rec-pass{background:var(--info-soft);color:var(--info)}
+.rec-renegotiate{background:var(--neg-soft);color:var(--neg)}
+
+/* Raw fallback */
+.raw-output{
+  font-size:13.5px;line-height:1.7;color:var(--ink-2);
+  white-space:pre-wrap;word-break:break-word;padding:8px 0;
+}
+.raw-output strong{color:var(--ink-1);font-weight:600}
+.error-box{
+  padding:14px 16px;border-radius:var(--r-md);
+  background:var(--neg-soft);color:var(--neg);
+  font-size:13px;border:1px solid #f5c8c2;
 }
 
-/* ── STATUS CHIPS ── */
-.status-chip{
-  padding:4px 10px;border-radius:20px;font-family:var(--sans);font-size:11px;font-weight:600;
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width:1100px){
+  .kpi-bento{grid-template-columns:1fr 1fr}
+  .kpi-tile.hero{grid-column:1/-1}
+  .charts-grid.cols-4{grid-template-columns:repeat(2,1fr)}
 }
-.chip-idle{background:var(--bg3);color:var(--ink3)}
-.chip-running{background:var(--amb-bg);color:var(--amber);border:1px solid var(--amb-rule)}
-.chip-done{background:var(--grn-bg);color:var(--green);border:1px solid var(--grn-rule)}
-.chip-error{background:var(--red-bg);color:var(--red);border:1px solid var(--red-rule)}
-
-/* ── EMPTY STATE ── */
-.empty-state{padding:36px 20px;text-align:center}
-.empty-state-icon{font-size:30px;margin-bottom:12px}
-.empty-state-title{font-size:15px;font-weight:700;color:var(--ink2);margin-bottom:6px}
-.empty-state-desc{font-size:13px;color:var(--ink3);line-height:1.7;max-width:400px;margin:0 auto}
-
-/* ── RUN BUTTON ── */
-.run-btn{
-  padding:8px 20px;border:none;border-radius:6px;
-  background:var(--accent);color:#fff;font-family:var(--sans);font-size:13px;
-  cursor:pointer;transition:all .15s;font-weight:600;
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .rail{display:none}
+  .content{padding:24px 20px 60px}
+  .kpi-bento,.charts-grid.cols-3,.charts-grid.cols-2{grid-template-columns:1fr}
+  .charts-grid.cols-4{grid-template-columns:1fr 1fr}
+  .page-head{flex-direction:column;align-items:flex-start}
+  .topbar{padding:0 16px;gap:12px}
+  .api-input{width:140px}
 }
-.run-btn:hover:not(:disabled){opacity:.85;transform:translateY(-1px)}
-.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.run-btn::before{content:"▶  "}
-
-/* ── ANOMALY FLAGS ── */
-.anom-metric{font-family:var(--sans);font-size:11px;margin-bottom:2px;font-weight:700}
-.anom-delta{font-family:var(--sans);font-size:11px;color:#5a7a60}
-
-/* ── SECTION TITLE IN CHARTS ── */
-.charts-section-title{
-  font-family:var(--sans);font-size:13px;font-weight:700;
-  color:var(--ink3);margin-bottom:14px;
-  display:flex;align-items:center;gap:10px;letter-spacing:0;text-transform:none;
-}
-.charts-section-title::after{content:'';flex:1;height:1px;background:var(--rule)}
-
-/* ── TABS ── */
-.tab-btn{
-  padding:10px 20px;font-family:var(--sans);font-size:13px;font-weight:600;
-  border:none;background:none;cursor:pointer;color:var(--ink3);
-  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;
-}
-.tab-btn:hover{color:var(--ink2)}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-
-/* ── TOPBAR API INPUT friendly ── */
-.api-wrap{display:flex;flex-direction:column;gap:2px}
-.api-wrap-label{font-family:var(--mono);font-size:9px;color:#7ab880;letter-spacing:.5px;text-transform:uppercase}
-
-/* ── TAB NAV ── */
-.tab-bar{
-  display:flex;align-items:center;gap:2px;
-  padding:0 32px;background:var(--bg2);
-  border-bottom:2px solid var(--rule);flex-shrink:0;
-}
-.tab-btn{
-  padding:10px 20px;font-family:var(--sans);font-size:12px;font-weight:600;
-  border:none;background:none;cursor:pointer;color:var(--ink3);
-  border-bottom:3px solid transparent;margin-bottom:-2px;
-  transition:all .15s;
-}
-.tab-btn:hover{color:var(--ink2)}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab-panel{display:none;padding:28px 32px}
-.tab-panel.active{display:block}
-
-/* ── PLATFORM SUB-TABS ── */
-.platform-tab-bar{
-  display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;
-}
-.platform-tab{
-  display:flex;align-items:center;gap:7px;
-  padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;
-  border:1.5px solid var(--rule);background:#f9fcfa;color:var(--ink3);
-  cursor:pointer;transition:all .15s;
-}
-.platform-tab:hover{background:var(--bg3);color:var(--ink2)}
-.platform-tab.active{background:#fff;color:var(--ink);border-color:var(--accent);box-shadow:0 1px 4px #16a34a22}
-.ptab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.platform-panel{display:none}
-.platform-panel.active{display:block}
-.platform-header{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 18px;background:#fff;border:1px solid var(--rule);
-  border-radius:10px;margin-bottom:20px;
-}
-.platform-header-icon{
-  width:44px;height:44px;border-radius:10px;border:1.5px solid;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.platform-header-title{font-size:15px;font-weight:700;margin-bottom:2px}
-.platform-header-sub{font-size:12px;color:var(--ink3);line-height:1.5}
-
-/* ── CHARTS SECTION ── */
-.charts-section{margin-bottom:32px}
-.charts-section-title{
-  font-family:var(--display);font-size:11px;font-weight:800;letter-spacing:2px;
-  text-transform:uppercase;color:var(--ink3);margin-bottom:14px;
-  display:flex;align-items:center;gap:8px;
-}
-.charts-section-title::after{content:'';flex:1;height:1px;background:var(--rule)}
-.charts-row{display:grid;gap:16px;margin-bottom:16px}
-.charts-row-4{grid-template-columns:repeat(4,1fr)}
-.charts-row-2{grid-template-columns:1fr 1fr}
-.charts-row-3{grid-template-columns:1fr 1fr 1fr}
-.chart-card{
-  background:#f9fcfa;border:1px solid var(--rule);border-radius:10px;
-  padding:16px 18px;position:relative;overflow:hidden;
-}
-.chart-card-title{
-  font-family:var(--sans);font-size:11px;font-weight:700;color:var(--ink2);
-  margin-bottom:2px;
-}
-.chart-card-sub{font-size:10px;color:var(--ink3);margin-bottom:12px}
-.chart-card canvas{display:block}
-.chart-badge{
-  position:absolute;top:14px;right:14px;
-  font-family:var(--mono);font-size:10px;font-weight:600;
-  padding:2px 7px;border-radius:20px;
-}
-.chart-badge-up{background:var(--grn-bg);color:var(--green);border:1px solid var(--grn-rule)}
-.chart-badge-dn{background:var(--red-bg);color:var(--red);border:1px solid var(--red-rule)}
-.chart-badge-warn{background:var(--amb-bg);color:var(--amber);border:1px solid var(--amb-rule)}
-
-/* Chevron */
-.chev{font-size:10px;color:var(--ink3);transition:transform .2s;margin-left:4px}
-.chev.open{transform:rotate(180deg)}
-
-/* Scrollbar */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--rule);border-radius:4px}
 </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     TOPBAR
+     ═══════════════════════════════════════════════════════════════ -->
 <header class="topbar">
-  <div class="logo">Margin<em>Optimizer</em></div>
-  <div class="week-badge">WEEK 23 · 2025</div>
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <span>MarginOptimizer</span>
+    <em>· Weekly Brief</em>
+  </div>
+
+  <div class="context-pill">Week 23 · 2025</div>
+
   <div class="topbar-right">
-    <div class="api-wrap">
-      <span class="api-wrap-label">AI API Key</span>
-      <input class="api-input" id="api-key" type="password" placeholder="Paste your Groq key here…" oninput="API_KEY=this.value.trim()">
+    <div class="api-field" title="Your AI API key (Groq)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+      <input class="api-input" id="api-key" type="password" placeholder="Paste your API key…" oninput="API_KEY=this.value.trim()">
     </div>
-    <button class="run-all-btn" id="run-all-btn" onclick="runAll()">▶ Run All Analysis</button>
+    <button class="btn-primary" id="run-all-btn" onclick="runAll()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      Run All Analyses
+    </button>
   </div>
 </header>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     SHELL
+     ═══════════════════════════════════════════════════════════════ -->
 <div class="shell">
-  <nav class="nav">
-    <div class="nav-section">
-      <div class="nav-label">⚠ Needs Attention</div>
-      <div class="anomaly-bar" id="anomaly-bar"></div>
+
+  <!-- ── SIDE RAIL ── -->
+  <aside class="rail">
+    <div class="rail-section">
+      <div class="rail-label">Jump to</div>
+      <a class="rail-link active" onclick="scrollAnchor('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Overview
+      </a>
+      <a class="rail-link" onclick="scrollAnchor('trends')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Trends
+      </a>
+      <a class="rail-link" onclick="scrollAnchor('breakdown')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+        Breakdown
+      </a>
+      <a class="rail-link" onclick="scrollAnchor('analysis')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v2a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        AI Analyses
+        <span class="rail-link-count">5</span>
+      </a>
     </div>
-  </nav>
 
-  <main class="main" id="main-scroll">
+    <div class="rail-section">
+      <div class="rail-label">⚠ Needs attention</div>
+      <div class="anomalies" id="anomaly-bar"></div>
+    </div>
+  </aside>
 
-    <div class="data-sources">
-      <span class="ds-label">Data from</span>
-      <span class="ds-badge ds-shopify"><span class="ds-dot"></span>Shopify — Orders &amp; Products</span>
-      <span class="ds-badge ds-google"><span class="ds-dot"></span>Google Ads — Campaign Spend</span>
-      <span class="ds-badge ds-xero"><span class="ds-dot"></span>Xero — COGS &amp; Supplier Costs</span>
+  <!-- ── MAIN CONTENT ── -->
+  <main class="content">
+
+    <!-- PAGE HEAD -->
+    <div class="page-head" id="overview">
+      <div class="page-head-l">
+        <div class="eyebrow">Weekly brief · 7 Jun – 13 Jun 2025</div>
+        <h1 class="page-title">Margin is slipping, but revenue isn't.</h1>
+        <p class="page-sub">Top-line is up 8% week-over-week, but gross margin dropped 2.9 points. AI flagged 3 high-impact leaks and 2 supplier movements to review.</p>
+      </div>
+      <div class="data-source-row">
+        <span class="data-source-row-label">Data sources</span>
+        <span class="platform-pill shopify"><span class="dot"></span>Shopify</span>
+        <span class="platform-pill google"><span class="dot"></span>Google Ads</span>
+        <span class="platform-pill xero"><span class="dot"></span>Xero</span>
+      </div>
     </div>
 
-    <!-- TAB BAR -->
-    <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchTab('charts')">📊 Charts &amp; Metrics</button>
-      <button class="tab-btn" onclick="switchTab('analysis')">🤖 AI Analysis</button>
-    </div>
-
-    <div class="main-content">
-
-      <!-- ── CHARTS TAB ── -->
-      <div class="tab-panel active" id="tab-charts">
-
-        <div class="kpi-grid">
-          <div class="kpi">
-            <div class="kpi-label">Revenue (WTD)</div>
-            <div class="kpi-value">$214.4K</div>
-            <div class="kpi-delta delta-up">↑ +8.2% vs prior week</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Gross Margin %</div>
-            <div class="kpi-value">38.2%</div>
-            <div class="kpi-delta delta-dn">↓ −2.9pp vs prior week</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Blended ROAS</div>
-            <div class="kpi-value">2.8×</div>
-            <div class="kpi-delta delta-dn">↓ −0.4 vs 4wk avg</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Freight / Revenue</div>
-            <div class="kpi-value">5.3%</div>
-            <div class="kpi-delta delta-dn">↓ +0.8pp — spike</div>
-          </div>
+    <!-- ═══ SECTION: OVERVIEW KPIs ═══ -->
+    <section class="section">
+      <div class="section-head">
+        <div class="section-head-l">
+          <div class="section-title"><span class="section-num">01</span>Overview</div>
+          <div class="section-sub">Key metrics for the week, week-over-week change in parentheses.</div>
         </div>
+      </div>
 
-        <!-- ═══ CHARTS SECTION ═══ -->
-        <div class="charts-section">
-          <div class="charts-section-title">8-Week Trends</div>
-          <div class="charts-row charts-row-4">
-            <div class="chart-card">
+      <div class="kpi-bento">
+        <div class="kpi-tile hero">
+          <div class="kpi-label">Revenue (week to date)</div>
+          <div class="kpi-value">$214.4K</div>
+          <span class="kpi-delta pos">▲ +8.2%</span>
+          <div class="kpi-foot">vs $198.2K last week · Shopify</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Gross Margin</div>
+          <div class="kpi-value">38.2%</div>
+          <span class="kpi-delta neg">▼ −2.9pp</span>
+          <div class="kpi-foot">vs 41.1% last week</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Blended ROAS</div>
+          <div class="kpi-value">2.8×</div>
+          <span class="kpi-delta neg">▼ −0.4×</span>
+          <div class="kpi-foot">vs 4-week avg</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Freight / Revenue</div>
+          <div class="kpi-value">5.3%</div>
+          <span class="kpi-delta warn">▲ +0.8pp</span>
+          <div class="kpi-foot">spike — investigate</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: TRENDS ═══ -->
+    <section class="section" id="trends">
+      <div class="section-head">
+        <div class="section-head-l">
+          <div class="section-title"><span class="section-num">02</span>8-week trends</div>
+          <div class="section-sub">How the headline metrics moved over the past two months.</div>
+        </div>
+      </div>
+
+      <div class="charts-grid cols-4">
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
               <div class="chart-card-title">Weekly Revenue</div>
-              <div class="chart-card-sub">Last 8 weeks · Shopify</div>
-              <span class="chart-badge chart-badge-up">↑ +8.2%</span>
-              <div style="position:relative;height:80px"><canvas id="chart-revenue"></canvas></div>
+              <div class="chart-card-sub">Shopify · last 8 weeks</div>
             </div>
-            <div class="chart-card">
-              <div class="chart-card-title">Gross Margin %</div>
-              <div class="chart-card-sub">Last 8 weeks · Shopify + Xero</div>
-              <span class="chart-badge chart-badge-dn">↓ −2.9pp</span>
-              <div style="position:relative;height:80px"><canvas id="chart-gm"></canvas></div>
+            <span class="chart-trend pos">▲ 8.2%</span>
+          </div>
+          <div style="position:relative;height:80px"><canvas id="chart-revenue"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Gross Margin</div>
+              <div class="chart-card-sub">Shopify + Xero · last 8 weeks</div>
             </div>
-            <div class="chart-card">
+            <span class="chart-trend neg">▼ 2.9pp</span>
+          </div>
+          <div style="position:relative;height:80px"><canvas id="chart-gm"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
               <div class="chart-card-title">Blended ROAS</div>
-              <div class="chart-card-sub">Last 8 weeks · Google Ads</div>
-              <span class="chart-badge chart-badge-dn">↓ −0.4</span>
-              <div style="position:relative;height:80px"><canvas id="chart-roas"></canvas></div>
+              <div class="chart-card-sub">Google Ads · last 8 weeks</div>
             </div>
-            <div class="chart-card">
-              <div class="chart-card-title">Freight / Revenue %</div>
-              <div class="chart-card-sub">Last 8 weeks · Xero</div>
-              <span class="chart-badge chart-badge-warn">↑ spike</span>
-              <div style="position:relative;height:80px"><canvas id="chart-freight"></canvas></div>
-            </div>
+            <span class="chart-trend neg">▼ 0.4</span>
           </div>
+          <div style="position:relative;height:80px"><canvas id="chart-roas"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Freight / Revenue</div>
+              <div class="chart-card-sub">Xero · last 8 weeks</div>
+            </div>
+            <span class="chart-trend warn">▲ spike</span>
+          </div>
+          <div style="position:relative;height:80px"><canvas id="chart-freight"></canvas></div>
+        </div>
+      </div>
+    </section>
 
-          <div class="charts-section-title">Product &amp; Campaign Breakdown</div>
-          <div class="charts-row charts-row-2">
-            <div class="chart-card">
-              <div class="chart-card-title">Gross Margin % by Product</div>
+    <!-- ═══ SECTION: BREAKDOWN ═══ -->
+    <section class="section" id="breakdown">
+      <div class="section-head">
+        <div class="section-head-l">
+          <div class="section-title"><span class="section-num">03</span>Detailed breakdown</div>
+          <div class="section-sub">Where the margin and ad-spend efficiency is concentrated.</div>
+        </div>
+      </div>
+
+      <div class="charts-grid cols-2">
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Gross margin by product</div>
               <div class="chart-card-sub">This week vs prior average · Shopify + Xero</div>
-              <div style="position:relative;height:200px"><canvas id="chart-sku-margin"></canvas></div>
             </div>
-            <div class="chart-card">
-              <div class="chart-card-title">Campaign Profit ROAS</div>
+          </div>
+          <div style="position:relative;height:220px"><canvas id="chart-sku-margin"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Campaign profit ROAS</div>
               <div class="chart-card-sub">True ROAS after product margin · Google Ads</div>
-              <div style="position:relative;height:200px"><canvas id="chart-campaign-roas"></canvas></div>
             </div>
           </div>
+          <div style="position:relative;height:220px"><canvas id="chart-campaign-roas"></canvas></div>
+        </div>
+      </div>
 
-          <div class="charts-section-title">Channel, Spend &amp; Suppliers</div>
-          <div class="charts-row charts-row-3">
-            <div class="chart-card">
-              <div class="chart-card-title">Revenue by Channel</div>
-              <div class="chart-card-sub">DTC vs Amazon vs Wholesale · Shopify</div>
-              <div style="position:relative;height:200px"><canvas id="chart-channel"></canvas></div>
+      <div class="charts-grid cols-3" style="margin-top:14px">
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Revenue by channel</div>
+              <div class="chart-card-sub">DTC · Amazon · Wholesale</div>
             </div>
-            <div class="chart-card">
-              <div class="chart-card-title">Ad Spend vs Revenue by Campaign</div>
-              <div class="chart-card-sub">This week · Google Ads</div>
-              <div style="position:relative;height:200px"><canvas id="chart-spend"></canvas></div>
+          </div>
+          <div style="position:relative;height:200px"><canvas id="chart-channel"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Spend vs revenue</div>
+              <div class="chart-card-sub">By campaign · Google Ads</div>
             </div>
-            <div class="chart-card">
-              <div class="chart-card-title">Supplier Cost Change</div>
+          </div>
+          <div style="position:relative;height:200px"><canvas id="chart-spend"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div>
+              <div class="chart-card-title">Supplier cost change</div>
               <div class="chart-card-sub">Current vs prior unit cost · Xero</div>
-              <div style="position:relative;height:200px"><canvas id="chart-supplier"></canvas></div>
+            </div>
+          </div>
+          <div style="position:relative;height:200px"><canvas id="chart-supplier"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: AI ANALYSES ═══ -->
+    <section class="section" id="analysis">
+      <div class="section-head">
+        <div class="section-head-l">
+          <div class="section-title"><span class="section-num">04</span>AI analyses</div>
+          <div class="section-sub">Plain-English insights and recommended actions, grouped by data platform.</div>
+        </div>
+      </div>
+
+      <div class="platform-switcher">
+        <button class="active" onclick="switchPlatform('shopify')">
+          <span class="pdot" style="background:var(--shopify)"></span>Shopify
+        </button>
+        <button onclick="switchPlatform('googleads')">
+          <span class="pdot" style="background:var(--google)"></span>Google Ads
+        </button>
+        <button onclick="switchPlatform('xero')">
+          <span class="pdot" style="background:var(--xero)"></span>Xero
+        </button>
+        <button onclick="switchPlatform('summary')">
+          <span class="pdot" style="background:var(--brand)"></span>Cross-platform summary
+        </button>
+      </div>
+
+      <!-- SHOPIFY -->
+      <div class="platform-panel active" id="platform-shopify">
+        <div class="platform-summary">
+          <div class="platform-summary-icon shopify">🛍</div>
+          <div class="platform-summary-text">
+            <div class="platform-summary-title">Shopify analyses</div>
+            <div class="platform-summary-sub">Product margins, pricing opportunities and margin leakage from your storefront.</div>
+          </div>
+        </div>
+
+        <div class="analysis-card" id="t1">
+          <div class="card-head" onclick="toggleCard('c1')">
+            <div class="card-emoji">📉</div>
+            <div class="card-meta">
+              <div class="card-title">Where is my margin going?</div>
+              <div class="card-sub">Top issues eating into your profit this week — with dollar estimates</div>
+            </div>
+            <div class="card-actions">
+              <span class="platform-pill shopify"><span class="dot"></span>Shopify</span>
+              <span class="platform-pill xero"><span class="dot"></span>Xero</span>
+              <span class="status-chip chip-idle" id="chip-t1">Not run yet</span>
+              <button class="run-btn" id="btn-t1" onclick="event.stopPropagation();runTemplate('t1')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Analyse
+              </button>
+              <span class="chev" id="chev-c1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="card-body open" id="c1">
+            <div class="output-area" id="out-t1">
+              <div class="output-loading" style="display:none" id="load-t1">
+                <div class="loader"><span></span><span></span><span></span></div>
+                <span>AI is analysing your margin data…</span>
+              </div>
+              <div class="output-rendered" id="render-t1">
+                <div class="empty-state">
+                  <div class="empty-state-icon">🔍</div>
+                  <div class="empty-state-title">Ready to find your margin leaks</div>
+                  <div class="empty-state-desc">Paste your API key above and click <strong>Analyse</strong>. The AI scans Shopify and Xero data and flags the top issues in seconds.</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-      </div><!-- end tab-charts -->
+        <div class="analysis-card" id="t5">
+          <div class="card-head" onclick="toggleCard('c5')">
+            <div class="card-emoji">💰</div>
+            <div class="card-meta">
+              <div class="card-title">How can I charge more (or discount less)?</div>
+              <div class="card-sub">Spots products where you can safely raise prices, cut discounts or create bundles</div>
+            </div>
+            <div class="card-actions">
+              <span class="platform-pill shopify"><span class="dot"></span>Shopify</span>
+              <span class="status-chip chip-idle" id="chip-t5">Not run yet</span>
+              <button class="run-btn" id="btn-t5" onclick="event.stopPropagation();runTemplate('t5')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Analyse
+              </button>
+              <span class="chev" id="chev-c5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="card-body" id="c5">
+            <div class="output-area" id="out-t5">
+              <div class="output-loading" style="display:none" id="load-t5"></div>
+              <div class="output-rendered" id="render-t5">
+                <div class="empty-state">
+                  <div class="empty-state-icon">💰</div>
+                  <div class="empty-state-title">Ready to find pricing opportunities</div>
+                  <div class="empty-state-desc">The AI will analyse your Shopify pricing data and flag specific products where you could earn more without hurting sales.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <!-- ── AI ANALYSIS TAB ── -->
-      <div class="tab-panel" id="tab-analysis">
-
-        <!-- Platform sub-tab bar -->
-        <div class="platform-tab-bar">
-          <button class="platform-tab active" onclick="switchPlatform('shopify')">
-            <span class="ptab-dot" style="background:#2e7d32"></span> Shopify
-          </button>
-          <button class="platform-tab" onclick="switchPlatform('googleads')">
-            <span class="ptab-dot" style="background:#1565c0"></span> Google Ads
-          </button>
-          <button class="platform-tab" onclick="switchPlatform('xero')">
-            <span class="ptab-dot" style="background:#0277bd"></span> Xero
-          </button>
-          <button class="platform-tab" onclick="switchPlatform('summary')">
-            <span class="ptab-dot" style="background:#6a8a70"></span> All Platforms Summary
-          </button>
+      <!-- GOOGLE ADS -->
+      <div class="platform-panel" id="platform-googleads">
+        <div class="platform-summary">
+          <div class="platform-summary-icon google">📣</div>
+          <div class="platform-summary-text">
+            <div class="platform-summary-title">Google Ads analyses</div>
+            <div class="platform-summary-sub">Campaign profitability, true profit ROAS and ad-spend efficiency.</div>
+          </div>
         </div>
 
-        <!-- ── SHOPIFY PLATFORM ── -->
-        <div class="platform-panel active" id="platform-shopify">
-          <div class="platform-header">
-            <div class="platform-header-icon" style="background:#e8f5e9;border-color:#a5d6a7">
-              <span style="color:#2e7d32;font-size:18px">🛍</span>
+        <div class="analysis-card" id="t2">
+          <div class="card-head" onclick="toggleCard('c2')">
+            <div class="card-emoji">📣</div>
+            <div class="card-meta">
+              <div class="card-title">Which ads are actually making money?</div>
+              <div class="card-sub">True profit per campaign after factoring in product margin — not just ROAS</div>
             </div>
-            <div>
-              <div class="platform-header-title" style="color:#2e7d32">Shopify Analysis</div>
-              <div class="platform-header-sub">Product margins, pricing opportunities &amp; margin leakage from your store</div>
+            <div class="card-actions">
+              <span class="platform-pill google"><span class="dot"></span>Google Ads</span>
+              <span class="platform-pill shopify"><span class="dot"></span>Shopify</span>
+              <span class="status-chip chip-idle" id="chip-t2">Not run yet</span>
+              <button class="run-btn" id="btn-t2" onclick="event.stopPropagation();runTemplate('t2')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Analyse
+              </button>
+              <span class="chev" id="chev-c2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
             </div>
           </div>
-
-          <div class="template-card" id="t1">
-            <div class="card-header" onclick="toggleCard('c1')">
-              <div class="card-title-block">
-                <span class="card-title">📉 Where is my margin going?</span>
-                <span class="card-subtitle">Finds the top issues eating into your profit this week — with dollar estimates</span>
-              </div>
-              <div class="card-actions">
-                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-                <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
-                <span class="status-chip chip-idle" id="chip-t1">Not run yet</span>
-                <button class="run-btn" id="btn-t1" onclick="event.stopPropagation();runTemplate('t1')">Analyse Now</button>
-                <span class="chev" id="chev-c1">▼</span>
-              </div>
-            </div>
-            <div class="card-body open" id="c1">
-              <div class="output-area" id="out-t1">
-                <div class="output-loading" style="display:none" id="load-t1">
-                  <div class="loader"><span></span><span></span><span></span></div>
-                  <span>AI is analysing your margin data…</span>
-                </div>
-                <div class="output-rendered" id="render-t1">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">🔍</div>
-                    <div class="empty-state-title">Ready to find your margin leaks</div>
-                    <div class="empty-state-desc">Paste your API key above and click <strong>Analyse Now</strong> — the AI will scan your Shopify &amp; Xero data and flag the top issues in seconds.</div>
-                  </div>
+          <div class="card-body" id="c2">
+            <div class="output-area" id="out-t2">
+              <div class="output-loading" style="display:none" id="load-t2"></div>
+              <div class="output-rendered" id="render-t2">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📣</div>
+                  <div class="empty-state-title">Ready to audit your campaigns</div>
+                  <div class="empty-state-desc">The AI cross-references Google Ads spend with Shopify product margins to show which campaigns are genuinely profitable.</div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="template-card" id="t5">
-            <div class="card-header" onclick="toggleCard('c5')">
-              <div class="card-title-block">
-                <span class="card-title">💰 How can I charge more (or discount less)?</span>
-                <span class="card-subtitle">Spots products where you can safely raise prices, cut discounts, or create bundles</span>
-              </div>
-              <div class="card-actions">
-                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-                <span class="status-chip chip-idle" id="chip-t5">Not run yet</span>
-                <button class="run-btn" id="btn-t5" onclick="event.stopPropagation();runTemplate('t5')">Analyse Now</button>
-                <span class="chev" id="chev-c5">▼</span>
-              </div>
+      <!-- XERO -->
+      <div class="platform-panel" id="platform-xero">
+        <div class="platform-summary">
+          <div class="platform-summary-icon xero">🏭</div>
+          <div class="platform-summary-text">
+            <div class="platform-summary-title">Xero analyses</div>
+            <div class="platform-summary-sub">Supplier cost movements, COGS changes and procurement recommendations.</div>
+          </div>
+        </div>
+
+        <div class="analysis-card" id="t3">
+          <div class="card-head" onclick="toggleCard('c3')">
+            <div class="card-emoji">🏭</div>
+            <div class="card-meta">
+              <div class="card-title">Are my supplier costs hurting me?</div>
+              <div class="card-sub">Flags cost increases from Xero and recommends absorb, pass-on or renegotiate</div>
             </div>
-            <div class="card-body" id="c5">
-              <div class="output-area" id="out-t5">
-                <div class="output-loading" style="display:none" id="load-t5"></div>
-                <div class="output-rendered" id="render-t5">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">💰</div>
-                    <div class="empty-state-title">Ready to find pricing opportunities</div>
-                    <div class="empty-state-desc">The AI will analyse your Shopify pricing data and flag specific products where you could make more money without hurting sales.</div>
-                  </div>
+            <div class="card-actions">
+              <span class="platform-pill xero"><span class="dot"></span>Xero</span>
+              <span class="status-chip chip-idle" id="chip-t3">Not run yet</span>
+              <button class="run-btn" id="btn-t3" onclick="event.stopPropagation();runTemplate('t3')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Analyse
+              </button>
+              <span class="chev" id="chev-c3">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="card-body" id="c3">
+            <div class="output-area" id="out-t3">
+              <div class="output-loading" style="display:none" id="load-t3"></div>
+              <div class="output-rendered" id="render-t3">
+                <div class="empty-state">
+                  <div class="empty-state-icon">🏭</div>
+                  <div class="empty-state-title">Ready to check supplier costs</div>
+                  <div class="empty-state-desc">The AI scans your Xero supplier invoices for cost movements over 3% and gives a clear recommendation for each.</div>
                 </div>
               </div>
             </div>
           </div>
-        </div><!-- end platform-shopify -->
+        </div>
+      </div>
 
-        <!-- ── GOOGLE ADS PLATFORM ── -->
-        <div class="platform-panel" id="platform-googleads">
-          <div class="platform-header">
-            <div class="platform-header-icon" style="background:#e3f2fd;border-color:#90caf9">
-              <span style="color:#1565c0;font-size:18px">📣</span>
+      <!-- CROSS-PLATFORM SUMMARY -->
+      <div class="platform-panel" id="platform-summary">
+        <div class="platform-summary">
+          <div class="platform-summary-icon all">📋</div>
+          <div class="platform-summary-text">
+            <div class="platform-summary-title">Cross-platform summary</div>
+            <div class="platform-summary-sub">A plain-English brief that combines Shopify, Google Ads and Xero data into one story.</div>
+          </div>
+        </div>
+
+        <div class="analysis-card" id="t4">
+          <div class="card-head" onclick="toggleCard('c4')">
+            <div class="card-emoji">📋</div>
+            <div class="card-meta">
+              <div class="card-title">Give me a plain-English summary</div>
+              <div class="card-sub">A 60-second brief covering what happened, what needs attention and what to do today</div>
             </div>
-            <div>
-              <div class="platform-header-title" style="color:#1565c0">Google Ads Analysis</div>
-              <div class="platform-header-sub">Campaign profitability, true profit ROAS &amp; spend efficiency</div>
+            <div class="card-actions">
+              <span class="platform-pill shopify"><span class="dot"></span>Shopify</span>
+              <span class="platform-pill google"><span class="dot"></span>Google</span>
+              <span class="platform-pill xero"><span class="dot"></span>Xero</span>
+              <span class="status-chip chip-idle" id="chip-t4">Not run yet</span>
+              <button class="run-btn" id="btn-t4" onclick="event.stopPropagation();runTemplate('t4')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Analyse
+              </button>
+              <span class="chev" id="chev-c4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </span>
             </div>
           </div>
-
-          <div class="template-card" id="t2">
-            <div class="card-header" onclick="toggleCard('c2')">
-              <div class="card-title-block">
-                <span class="card-title">📣 Which ads are actually making money?</span>
-                <span class="card-subtitle">Shows true profit per campaign after factoring in product margins — not just ROAS</span>
-              </div>
-              <div class="card-actions">
-                <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
-                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-                <span class="status-chip chip-idle" id="chip-t2">Not run yet</span>
-                <button class="run-btn" id="btn-t2" onclick="event.stopPropagation();runTemplate('t2')">Analyse Now</button>
-                <span class="chev" id="chev-c2">▼</span>
-              </div>
-            </div>
-            <div class="card-body" id="c2">
-              <div class="output-area" id="out-t2">
-                <div class="output-loading" style="display:none" id="load-t2"></div>
-                <div class="output-rendered" id="render-t2">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">📣</div>
-                    <div class="empty-state-title">Ready to audit your campaigns</div>
-                    <div class="empty-state-desc">The AI will cross-reference your Google Ads spend with your Shopify product margins to show which campaigns are truly profitable.</div>
-                  </div>
+          <div class="card-body" id="c4">
+            <div class="output-area" id="out-t4">
+              <div class="output-loading" style="display:none" id="load-t4"></div>
+              <div class="output-rendered" id="render-t4">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📋</div>
+                  <div class="empty-state-title">Ready to write your weekly summary</div>
+                  <div class="empty-state-desc">The AI pulls together all your data into a short, jargon-free summary you can read in under a minute.</div>
                 </div>
               </div>
             </div>
           </div>
-        </div><!-- end platform-googleads -->
+        </div>
+      </div>
 
-        <!-- ── XERO PLATFORM ── -->
-        <div class="platform-panel" id="platform-xero">
-          <div class="platform-header">
-            <div class="platform-header-icon" style="background:#e8f4fd;border-color:#81d4fa">
-              <span style="color:#0277bd;font-size:18px">🏭</span>
-            </div>
-            <div>
-              <div class="platform-header-title" style="color:#0277bd">Xero Analysis</div>
-              <div class="platform-header-sub">Supplier cost movements, COGS changes &amp; procurement recommendations</div>
-            </div>
-          </div>
+    </section>
 
-          <div class="template-card" id="t3">
-            <div class="card-header" onclick="toggleCard('c3')">
-              <div class="card-title-block">
-                <span class="card-title">🏭 Are my supplier costs hurting me?</span>
-                <span class="card-subtitle">Flags cost increases from Xero and tells you whether to absorb, pass on, or renegotiate</span>
-              </div>
-              <div class="card-actions">
-                <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
-                <span class="status-chip chip-idle" id="chip-t3">Not run yet</span>
-                <button class="run-btn" id="btn-t3" onclick="event.stopPropagation();runTemplate('t3')">Analyse Now</button>
-                <span class="chev" id="chev-c3">▼</span>
-              </div>
-            </div>
-            <div class="card-body" id="c3">
-              <div class="output-area" id="out-t3">
-                <div class="output-loading" style="display:none" id="load-t3"></div>
-                <div class="output-rendered" id="render-t3">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">🏭</div>
-                    <div class="empty-state-title">Ready to check supplier costs</div>
-                    <div class="empty-state-desc">The AI will scan your Xero supplier invoices for cost movements over 3% and give you a clear recommendation for each one.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div><!-- end platform-xero -->
-
-        <!-- ── ALL PLATFORMS SUMMARY ── -->
-        <div class="platform-panel" id="platform-summary">
-          <div class="platform-header">
-            <div class="platform-header-icon" style="background:#f0faf4;border-color:#c8dece">
-              <span style="color:#16a34a;font-size:18px">📋</span>
-            </div>
-            <div>
-              <div class="platform-header-title" style="color:#16a34a">All Platforms Summary</div>
-              <div class="platform-header-sub">A plain-English brief combining Shopify, Google Ads &amp; Xero data</div>
-            </div>
-          </div>
-
-          <div class="template-card" id="t4">
-            <div class="card-header" onclick="toggleCard('c4')">
-              <div class="card-title-block">
-                <span class="card-title">📋 Give me a plain-English summary</span>
-                <span class="card-subtitle">A 60-second brief covering what happened, what needs attention, and what to do today</span>
-              </div>
-              <div class="card-actions">
-                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-                <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
-                <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
-                <span class="status-chip chip-idle" id="chip-t4">Not run yet</span>
-                <button class="run-btn" id="btn-t4" onclick="event.stopPropagation();runTemplate('t4')">Analyse Now</button>
-                <span class="chev" id="chev-c4">▼</span>
-              </div>
-            </div>
-            <div class="card-body" id="c4">
-              <div class="output-area" id="out-t4">
-                <div class="output-loading" style="display:none" id="load-t4"></div>
-                <div class="output-rendered" id="render-t4">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">📋</div>
-                    <div class="empty-state-title">Ready to write your weekly summary</div>
-                    <div class="empty-state-desc">The AI will pull together all your data into a short, jargon-free summary you can read in under a minute.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div><!-- end platform-summary -->
-
-      </div><!-- end tab-analysis -->
-    </div><!-- end main-content -->
   </main>
 </div>
 
@@ -895,9 +1190,9 @@ function renderAnomalies() {
   const flags = detectAnomalies();
   const bar = document.getElementById('anomaly-bar');
   bar.innerHTML = flags.map(f => `
-    <div class="anom-item ${f.severity==='high'?'anom-high':'anom-med'}">
-      <div class="anom-metric">${f.metric.length>20?f.metric.slice(0,18)+'…':f.metric}</div>
-      <div class="anom-delta">${f.label}</div>
+    <div class="anomaly-mini ${f.severity==='high'?'anom-high':'anom-med'}">
+      <div class="anomaly-mini-title">${f.metric.length>22?f.metric.slice(0,20)+'…':f.metric}</div>
+      <div class="anomaly-mini-delta">${f.label}</div>
     </div>`).join('');
 }
 
@@ -976,13 +1271,16 @@ function toggleCard(id) {
   chev.classList.toggle('open');
 }
 
-function scrollTo(id) {
-  document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  // find and activate
-  const items = document.querySelectorAll('.nav-item');
-  items.forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('active'); });
+function scrollAnchor(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.rail-link').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.rail-link').forEach(a => {
+    if (a.getAttribute('onclick')?.includes("'"+id+"'")) a.classList.add('active');
+  });
 }
+// Back-compat: keep scrollTo name if anything still calls it
+function scrollTo(id){scrollAnchor(id);}
 
 function setChip(tid, state) {
   const chip = document.getElementById('chip-'+tid);
@@ -1348,16 +1646,16 @@ renderAnomalies();
 // ═══════════════════════════════════════════════════
 
 function initCharts() {
-  const GREEN  = '#16a34a';
+  const GREEN  = '#0a8d4a';
   const GREEN2 = '#4ade80';
-  const RED    = '#c0392b';
-  const AMBER  = '#b35a00';
-  const BLUE   = '#2563eb';
-  const TEAL   = '#0891b2';
+  const RED    = '#d33a2c';
+  const AMBER  = '#b25e09';
+  const BLUE   = '#1e5fb8';
+  const TEAL   = '#0a7da5';
   const PURPLE = '#7c3aed';
-  const ORANGE = '#ea580c';
-  const RULE   = '#c8dece';
-  const INK3   = '#6a8a70';
+  const ORANGE = '#b25e09';
+  const RULE   = '#e6e8eb';
+  const INK3   = '#6a7178';
 
   const WEEKS  = ['W16','W17','W18','W19','W20','W21','W22','W23'];
 
@@ -1365,12 +1663,13 @@ function initCharts() {
     responsive:true,
     maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{
-      backgroundColor:'#1a2e20',titleFont:{family:'DM Mono',size:10},
-      bodyFont:{family:'DM Sans',size:11},padding:8,cornerRadius:6,
+      backgroundColor:'#0d1117',titleFont:{family:'Inter',size:11,weight:'600'},
+      bodyFont:{family:'Inter',size:12},padding:10,cornerRadius:8,
+      displayColors:false,
     }},
     scales:{
-      x:{grid:{display:false},ticks:{font:{family:'DM Mono',size:9},color:INK3}},
-      y:{grid:{color:RULE+'80'},ticks:{font:{family:'DM Mono',size:9},color:INK3}}
+      x:{grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},color:INK3},border:{display:false}},
+      y:{grid:{color:RULE,drawBorder:false},ticks:{font:{family:'JetBrains Mono',size:10},color:INK3},border:{display:false}}
     }
   };
 
@@ -1472,7 +1771,7 @@ function initCharts() {
       ]
     },
     options:{...baseOpts,
-      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'DM Sans',size:10},color:INK3,boxWidth:10,padding:12}}},
+      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'Inter',size:10},color:INK3,boxWidth:10,padding:12}}},
       scales:{
         x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30}},
         y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
@@ -1500,11 +1799,11 @@ function initCharts() {
     options:{...baseOpts,
       indexAxis:'y',
       plugins:{...baseOpts.plugins,
-        annotation:{annotations:{line1:{type:'line',x:1.2,borderColor:AMBER,borderWidth:1.5,borderDash:[4,3],label:{content:'Min 1.2×',display:true,font:{size:9,family:'DM Mono'},color:AMBER,position:'end'}}}}
+        annotation:{annotations:{line1:{type:'line',x:1.2,borderColor:AMBER,borderWidth:1.5,borderDash:[4,3],label:{content:'Min 1.2×',display:true,font:{size:9,family:'JetBrains Mono'},color:AMBER,position:'end'}}}}
       },
       scales:{
         x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,callback:v=>v+'×'}},
-        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{family:'DM Sans',size:10}}}
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{family:'Inter',size:10}}}
       }
     }
   });
@@ -1516,13 +1815,13 @@ function initCharts() {
     type:'doughnut',
     data:{
       labels:Object.keys(chanMap),
-      datasets:[{data:Object.values(chanMap),backgroundColor:[GREEN,BLUE,TEAL],borderWidth:2,borderColor:'#f9fcfa',hoverOffset:4}]
+      datasets:[{data:Object.values(chanMap),backgroundColor:[GREEN,BLUE,TEAL],borderWidth:3,borderColor:'#ffffff',hoverOffset:4}]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{
-        legend:{display:true,position:'bottom',labels:{font:{family:'DM Sans',size:10},color:INK3,boxWidth:10,padding:10}},
-        tooltip:{backgroundColor:'#1a2e20',titleFont:{family:'DM Mono',size:10},bodyFont:{family:'DM Sans',size:11},padding:8,cornerRadius:6,
+        legend:{display:true,position:'bottom',labels:{font:{family:'Inter',size:10},color:INK3,boxWidth:10,padding:10}},
+        tooltip:{backgroundColor:'#0d1117',titleFont:{family:'JetBrains Mono',size:10},bodyFont:{family:'Inter',size:11},padding:8,cornerRadius:6,
           callbacks:{label:ctx=>' $'+(ctx.raw/1000).toFixed(1)+'K ('+Math.round(ctx.raw/Object.values(chanMap).reduce((a,b)=>a+b,0)*100)+'%)'}}
       }
     }
@@ -1540,7 +1839,7 @@ function initCharts() {
       ]
     },
     options:{...baseOpts,
-      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'DM Sans',size:10},color:INK3,boxWidth:10,padding:10}}},
+      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'Inter',size:10},color:INK3,boxWidth:10,padding:10}}},
       scales:{
         x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30}},
         y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
