@@ -390,6 +390,33 @@ strong{font-weight:600;color:var(--ink)}
 .tab-panel{display:none;padding:28px 32px}
 .tab-panel.active{display:block}
 
+/* ── PLATFORM SUB-TABS ── */
+.platform-tab-bar{
+  display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;
+}
+.platform-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--rule);background:#f9fcfa;color:var(--ink3);
+  cursor:pointer;transition:all .15s;
+}
+.platform-tab:hover{background:var(--bg3);color:var(--ink2)}
+.platform-tab.active{background:#fff;color:var(--ink);border-color:var(--accent);box-shadow:0 1px 4px #16a34a22}
+.ptab-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.platform-panel{display:none}
+.platform-panel.active{display:block}
+.platform-header{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;background:#fff;border:1px solid var(--rule);
+  border-radius:10px;margin-bottom:20px;
+}
+.platform-header-icon{
+  width:44px;height:44px;border-radius:10px;border:1.5px solid;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.platform-header-title{font-size:15px;font-weight:700;margin-bottom:2px}
+.platform-header-sub{font-size:12px;color:var(--ink3);line-height:1.5}
+
 /* ── CHARTS SECTION ── */
 .charts-section{margin-bottom:32px}
 .charts-section-title{
@@ -565,147 +592,215 @@ strong{font-weight:600;color:var(--ink)}
       <!-- ── AI ANALYSIS TAB ── -->
       <div class="tab-panel" id="tab-analysis">
 
-    <div class="template-card" id="t1">
-      <div class="card-header" onclick="toggleCard('c1')">
-        <div class="card-title-block">
-          <span class="card-title">📉 Where is my margin going?</span>
-          <span class="card-subtitle">Finds the top issues eating into your profit this week — with dollar estimates</span>
+        <!-- Platform sub-tab bar -->
+        <div class="platform-tab-bar">
+          <button class="platform-tab active" onclick="switchPlatform('shopify')">
+            <span class="ptab-dot" style="background:#2e7d32"></span> Shopify
+          </button>
+          <button class="platform-tab" onclick="switchPlatform('googleads')">
+            <span class="ptab-dot" style="background:#1565c0"></span> Google Ads
+          </button>
+          <button class="platform-tab" onclick="switchPlatform('xero')">
+            <span class="ptab-dot" style="background:#0277bd"></span> Xero
+          </button>
+          <button class="platform-tab" onclick="switchPlatform('summary')">
+            <span class="ptab-dot" style="background:#6a8a70"></span> All Platforms Summary
+          </button>
         </div>
-        <div class="card-actions">
-          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-          <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
-          <span class="status-chip chip-idle" id="chip-t1">Not run yet</span>
-          <button class="run-btn" id="btn-t1" onclick="event.stopPropagation();runTemplate('t1')">Analyse Now</button>
-          <span class="chev" id="chev-c1">▼</span>
-        </div>
-      </div>
-      <div class="card-body open" id="c1">
-        <div class="output-area" id="out-t1">
-          <div class="output-loading" style="display:none" id="load-t1">
-            <div class="loader"><span></span><span></span><span></span></div>
-            <span>AI is analysing your margin data…</span>
-          </div>
-          <div class="output-rendered" id="render-t1">
-            <div class="empty-state">
-              <div class="empty-state-icon">🔍</div>
-              <div class="empty-state-title">Ready to find your margin leaks</div>
-              <div class="empty-state-desc">Paste your API key above and click <strong>Analyse Now</strong> — the AI will scan your Shopify &amp; Xero data and flag the top issues in seconds.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="template-card" id="t2">
-      <div class="card-header" onclick="toggleCard('c2')">
-        <div class="card-title-block">
-          <span class="card-title">📣 Which ads are actually making money?</span>
-          <span class="card-subtitle">Shows true profit per campaign after factoring in product margins — not just ROAS</span>
-        </div>
-        <div class="card-actions">
-          <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
-          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-          <span class="status-chip chip-idle" id="chip-t2">Not run yet</span>
-          <button class="run-btn" id="btn-t2" onclick="event.stopPropagation();runTemplate('t2')">Analyse Now</button>
-          <span class="chev" id="chev-c2">▼</span>
-        </div>
-      </div>
-      <div class="card-body" id="c2">
-        <div class="output-area" id="out-t2">
-          <div class="output-loading" style="display:none" id="load-t2"></div>
-          <div class="output-rendered" id="render-t2">
-            <div class="empty-state">
-              <div class="empty-state-icon">📣</div>
-              <div class="empty-state-title">Ready to audit your campaigns</div>
-              <div class="empty-state-desc">The AI will cross-reference your Google Ads spend with your Shopify product margins to show which campaigns are truly profitable.</div>
+        <!-- ── SHOPIFY PLATFORM ── -->
+        <div class="platform-panel active" id="platform-shopify">
+          <div class="platform-header">
+            <div class="platform-header-icon" style="background:#e8f5e9;border-color:#a5d6a7">
+              <span style="color:#2e7d32;font-size:18px">🛍</span>
+            </div>
+            <div>
+              <div class="platform-header-title" style="color:#2e7d32">Shopify Analysis</div>
+              <div class="platform-header-sub">Product margins, pricing opportunities &amp; margin leakage from your store</div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="template-card" id="t3">
-      <div class="card-header" onclick="toggleCard('c3')">
-        <div class="card-title-block">
-          <span class="card-title">🏭 Are my supplier costs hurting me?</span>
-          <span class="card-subtitle">Flags cost increases from Xero and tells you whether to absorb, pass on, or renegotiate</span>
-        </div>
-        <div class="card-actions">
-          <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
-          <span class="status-chip chip-idle" id="chip-t3">Not run yet</span>
-          <button class="run-btn" id="btn-t3" onclick="event.stopPropagation();runTemplate('t3')">Analyse Now</button>
-          <span class="chev" id="chev-c3">▼</span>
-        </div>
-      </div>
-      <div class="card-body" id="c3">
-        <div class="output-area" id="out-t3">
-          <div class="output-loading" style="display:none" id="load-t3"></div>
-          <div class="output-rendered" id="render-t3">
-            <div class="empty-state">
-              <div class="empty-state-icon">🏭</div>
-              <div class="empty-state-title">Ready to check supplier costs</div>
-              <div class="empty-state-desc">The AI will scan your Xero supplier invoices for cost movements over 3% and give you a clear recommendation for each one.</div>
+          <div class="template-card" id="t1">
+            <div class="card-header" onclick="toggleCard('c1')">
+              <div class="card-title-block">
+                <span class="card-title">📉 Where is my margin going?</span>
+                <span class="card-subtitle">Finds the top issues eating into your profit this week — with dollar estimates</span>
+              </div>
+              <div class="card-actions">
+                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+                <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
+                <span class="status-chip chip-idle" id="chip-t1">Not run yet</span>
+                <button class="run-btn" id="btn-t1" onclick="event.stopPropagation();runTemplate('t1')">Analyse Now</button>
+                <span class="chev" id="chev-c1">▼</span>
+              </div>
+            </div>
+            <div class="card-body open" id="c1">
+              <div class="output-area" id="out-t1">
+                <div class="output-loading" style="display:none" id="load-t1">
+                  <div class="loader"><span></span><span></span><span></span></div>
+                  <span>AI is analysing your margin data…</span>
+                </div>
+                <div class="output-rendered" id="render-t1">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <div class="empty-state-title">Ready to find your margin leaks</div>
+                    <div class="empty-state-desc">Paste your API key above and click <strong>Analyse Now</strong> — the AI will scan your Shopify &amp; Xero data and flag the top issues in seconds.</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="template-card" id="t4">
-      <div class="card-header" onclick="toggleCard('c4')">
-        <div class="card-title-block">
-          <span class="card-title">📋 Give me a plain-English summary</span>
-          <span class="card-subtitle">A 60-second brief covering what happened, what needs attention, and what to do today</span>
-        </div>
-        <div class="card-actions">
-          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-          <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
-          <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
-          <span class="status-chip chip-idle" id="chip-t4">Not run yet</span>
-          <button class="run-btn" id="btn-t4" onclick="event.stopPropagation();runTemplate('t4')">Analyse Now</button>
-          <span class="chev" id="chev-c4">▼</span>
-        </div>
-      </div>
-      <div class="card-body" id="c4">
-        <div class="output-area" id="out-t4">
-          <div class="output-loading" style="display:none" id="load-t4"></div>
-          <div class="output-rendered" id="render-t4">
-            <div class="empty-state">
-              <div class="empty-state-icon">📋</div>
-              <div class="empty-state-title">Ready to write your weekly summary</div>
-              <div class="empty-state-desc">The AI will pull together all your data into a short, jargon-free summary you can read in under a minute.</div>
+          <div class="template-card" id="t5">
+            <div class="card-header" onclick="toggleCard('c5')">
+              <div class="card-title-block">
+                <span class="card-title">💰 How can I charge more (or discount less)?</span>
+                <span class="card-subtitle">Spots products where you can safely raise prices, cut discounts, or create bundles</span>
+              </div>
+              <div class="card-actions">
+                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+                <span class="status-chip chip-idle" id="chip-t5">Not run yet</span>
+                <button class="run-btn" id="btn-t5" onclick="event.stopPropagation();runTemplate('t5')">Analyse Now</button>
+                <span class="chev" id="chev-c5">▼</span>
+              </div>
+            </div>
+            <div class="card-body" id="c5">
+              <div class="output-area" id="out-t5">
+                <div class="output-loading" style="display:none" id="load-t5"></div>
+                <div class="output-rendered" id="render-t5">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">💰</div>
+                    <div class="empty-state-title">Ready to find pricing opportunities</div>
+                    <div class="empty-state-desc">The AI will analyse your Shopify pricing data and flag specific products where you could make more money without hurting sales.</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </div><!-- end platform-shopify -->
 
-    <div class="template-card" id="t5">
-      <div class="card-header" onclick="toggleCard('c5')">
-        <div class="card-title-block">
-          <span class="card-title">💰 How can I charge more (or discount less)?</span>
-          <span class="card-subtitle">Spots products where you can safely raise prices, cut discounts, or create bundles</span>
-        </div>
-        <div class="card-actions">
-          <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
-          <span class="status-chip chip-idle" id="chip-t5">Not run yet</span>
-          <button class="run-btn" id="btn-t5" onclick="event.stopPropagation();runTemplate('t5')">Analyse Now</button>
-          <span class="chev" id="chev-c5">▼</span>
-        </div>
-      </div>
-      <div class="card-body" id="c5">
-        <div class="output-area" id="out-t5">
-          <div class="output-loading" style="display:none" id="load-t5"></div>
-          <div class="output-rendered" id="render-t5">
-            <div class="empty-state">
-              <div class="empty-state-icon">💰</div>
-              <div class="empty-state-title">Ready to find pricing opportunities</div>
-              <div class="empty-state-desc">The AI will analyse your Shopify pricing data and flag specific products where you could make more money without hurting sales.</div>
+        <!-- ── GOOGLE ADS PLATFORM ── -->
+        <div class="platform-panel" id="platform-googleads">
+          <div class="platform-header">
+            <div class="platform-header-icon" style="background:#e3f2fd;border-color:#90caf9">
+              <span style="color:#1565c0;font-size:18px">📣</span>
+            </div>
+            <div>
+              <div class="platform-header-title" style="color:#1565c0">Google Ads Analysis</div>
+              <div class="platform-header-sub">Campaign profitability, true profit ROAS &amp; spend efficiency</div>
             </div>
           </div>
-        </div>
-      </div>
-    </div><!-- end t5 template-card -->
+
+          <div class="template-card" id="t2">
+            <div class="card-header" onclick="toggleCard('c2')">
+              <div class="card-title-block">
+                <span class="card-title">📣 Which ads are actually making money?</span>
+                <span class="card-subtitle">Shows true profit per campaign after factoring in product margins — not just ROAS</span>
+              </div>
+              <div class="card-actions">
+                <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
+                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+                <span class="status-chip chip-idle" id="chip-t2">Not run yet</span>
+                <button class="run-btn" id="btn-t2" onclick="event.stopPropagation();runTemplate('t2')">Analyse Now</button>
+                <span class="chev" id="chev-c2">▼</span>
+              </div>
+            </div>
+            <div class="card-body" id="c2">
+              <div class="output-area" id="out-t2">
+                <div class="output-loading" style="display:none" id="load-t2"></div>
+                <div class="output-rendered" id="render-t2">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">📣</div>
+                    <div class="empty-state-title">Ready to audit your campaigns</div>
+                    <div class="empty-state-desc">The AI will cross-reference your Google Ads spend with your Shopify product margins to show which campaigns are truly profitable.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- end platform-googleads -->
+
+        <!-- ── XERO PLATFORM ── -->
+        <div class="platform-panel" id="platform-xero">
+          <div class="platform-header">
+            <div class="platform-header-icon" style="background:#e8f4fd;border-color:#81d4fa">
+              <span style="color:#0277bd;font-size:18px">🏭</span>
+            </div>
+            <div>
+              <div class="platform-header-title" style="color:#0277bd">Xero Analysis</div>
+              <div class="platform-header-sub">Supplier cost movements, COGS changes &amp; procurement recommendations</div>
+            </div>
+          </div>
+
+          <div class="template-card" id="t3">
+            <div class="card-header" onclick="toggleCard('c3')">
+              <div class="card-title-block">
+                <span class="card-title">🏭 Are my supplier costs hurting me?</span>
+                <span class="card-subtitle">Flags cost increases from Xero and tells you whether to absorb, pass on, or renegotiate</span>
+              </div>
+              <div class="card-actions">
+                <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
+                <span class="status-chip chip-idle" id="chip-t3">Not run yet</span>
+                <button class="run-btn" id="btn-t3" onclick="event.stopPropagation();runTemplate('t3')">Analyse Now</button>
+                <span class="chev" id="chev-c3">▼</span>
+              </div>
+            </div>
+            <div class="card-body" id="c3">
+              <div class="output-area" id="out-t3">
+                <div class="output-loading" style="display:none" id="load-t3"></div>
+                <div class="output-rendered" id="render-t3">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">🏭</div>
+                    <div class="empty-state-title">Ready to check supplier costs</div>
+                    <div class="empty-state-desc">The AI will scan your Xero supplier invoices for cost movements over 3% and give you a clear recommendation for each one.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- end platform-xero -->
+
+        <!-- ── ALL PLATFORMS SUMMARY ── -->
+        <div class="platform-panel" id="platform-summary">
+          <div class="platform-header">
+            <div class="platform-header-icon" style="background:#f0faf4;border-color:#c8dece">
+              <span style="color:#16a34a;font-size:18px">📋</span>
+            </div>
+            <div>
+              <div class="platform-header-title" style="color:#16a34a">All Platforms Summary</div>
+              <div class="platform-header-sub">A plain-English brief combining Shopify, Google Ads &amp; Xero data</div>
+            </div>
+          </div>
+
+          <div class="template-card" id="t4">
+            <div class="card-header" onclick="toggleCard('c4')">
+              <div class="card-title-block">
+                <span class="card-title">📋 Give me a plain-English summary</span>
+                <span class="card-subtitle">A 60-second brief covering what happened, what needs attention, and what to do today</span>
+              </div>
+              <div class="card-actions">
+                <span class="ds-badge ds-shopify" style="font-size:10px"><span class="ds-dot"></span>Shopify</span>
+                <span class="ds-badge ds-google" style="font-size:10px"><span class="ds-dot"></span>Google Ads</span>
+                <span class="ds-badge ds-xero" style="font-size:10px"><span class="ds-dot"></span>Xero</span>
+                <span class="status-chip chip-idle" id="chip-t4">Not run yet</span>
+                <button class="run-btn" id="btn-t4" onclick="event.stopPropagation();runTemplate('t4')">Analyse Now</button>
+                <span class="chev" id="chev-c4">▼</span>
+              </div>
+            </div>
+            <div class="card-body" id="c4">
+              <div class="output-area" id="out-t4">
+                <div class="output-loading" style="display:none" id="load-t4"></div>
+                <div class="output-rendered" id="render-t4">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">Ready to write your weekly summary</div>
+                    <div class="empty-state-desc">The AI will pull together all your data into a short, jargon-free summary you can read in under a minute.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- end platform-summary -->
 
       </div><!-- end tab-analysis -->
     </div><!-- end main-content -->
@@ -1233,6 +1328,15 @@ function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.getAttribute('onclick').includes(name)) b.classList.add('active');
+  });
+}
+
+function switchPlatform(name) {
+  document.querySelectorAll('.platform-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.platform-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('platform-'+name).classList.add('active');
+  document.querySelectorAll('.platform-tab').forEach(b => {
     if (b.getAttribute('onclick').includes(name)) b.classList.add('active');
   });
 }
