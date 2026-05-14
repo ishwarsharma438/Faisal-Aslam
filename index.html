@@ -6,66 +6,106 @@
 <title>MarginOptimizer — Week 23</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════════
    DESIGN TOKENS
    ═══════════════════════════════════════════════════════════════ */
 :root{
-  /* Surfaces */
-  --bg:               #fafafa;
+  /* ─── Surfaces (warm-neutral, not flat gray) ─── */
+  --bg:               #f6f7fb;
+  --bg-tint:          #eef0f7;
   --surface:          #ffffff;
-  --surface-2:        #f4f5f7;
-  --surface-3:        #ebedf0;
+  --surface-2:        #f4f5fa;
+  --surface-3:        #e9ebf2;
 
-  /* Ink (text) */
-  --ink-1:            #0d1117;
-  --ink-2:            #353a42;
-  --ink-3:            #6a7178;
-  --ink-4:            #9ba1a8;
+  /* ─── Ink (text) — 5-step scale ─── */
+  --ink-1:            #15181f;
+  --ink-2:            #2e3340;
+  --ink-3:            #5b6271;
+  --ink-4:            #8b91a0;
+  --ink-5:            #b4b9c5;
 
-  /* Borders */
-  --line:             #e6e8eb;
-  --line-2:           #d4d7dc;
+  /* ─── Borders ─── */
+  --line:             #e4e6ee;
+  --line-2:           #cdd1dc;
+  --line-strong:      #b4bac9;
 
-  /* Brand & status */
-  --brand:            #0a8d4a;
-  --brand-soft:       #e8f5ed;
-  --brand-deep:       #066434;
+  /* ─── Primary (indigo-violet — refreshing, modern) ─── */
+  --primary-50:       #eef0ff;
+  --primary-100:      #dfe3ff;
+  --primary-200:      #c1c8ff;
+  --primary-300:      #9aa3ff;
+  --primary-400:      #7479fa;
+  --primary-500:      #5b5cf0;
+  --primary-600:      #4845d8;
+  --primary-700:      #3a36b1;
+  --primary-800:      #2f2c8a;
+  --primary-900:      #221f63;
 
-  --pos:              #0a8d4a;
-  --pos-soft:         #e8f5ed;
-  --neg:              #d33a2c;
-  --neg-soft:         #fdecea;
-  --warn:             #b25e09;
-  --warn-soft:        #fdf3e4;
-  --info:             #1e5fb8;
-  --info-soft:        #e8f0fa;
+  /* Back-compat (older rules reference brand/* — alias to primary) */
+  --brand:            var(--primary-600);
+  --brand-soft:       var(--primary-50);
+  --brand-deep:       var(--primary-800);
 
-  /* Platform colours (subtle, used only on pills) */
-  --shopify:          #0a8d4a;
-  --shopify-soft:     #e8f5ed;
-  --google:           #1e5fb8;
-  --google-soft:      #e8f0fa;
-  --xero:             #0a7da5;
-  --xero-soft:        #e3f2f9;
+  /* ─── Semantic: success / danger / warning / info ─── */
+  --pos:              #1f9d55;
+  --pos-soft:         #e3f7eb;
+  --pos-deep:         #146c3a;
 
-  /* Type */
-  --font-sans:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono:        'JetBrains Mono', monospace;
+  --neg:              #e0394c;
+  --neg-soft:         #fde7ea;
+  --neg-deep:         #9a1f2e;
 
-  /* Radius & shadow */
+  --warn:             #d97706;
+  --warn-soft:        #fef3e0;
+  --warn-deep:        #8b4a04;
+
+  --info:             #2563eb;
+  --info-soft:        #e3edff;
+  --info-deep:        #1a4ab5;
+
+  /* ─── Accents (for variety in charts/tags — Monday-inspired hues) ─── */
+  --accent-cyan:      #06b6d4;
+  --accent-cyan-soft: #e0f7fb;
+  --accent-coral:     #ff6b6b;
+  --accent-coral-soft:#ffe6e6;
+  --accent-amber:     #f59e0b;
+  --accent-amber-soft:#fef3c7;
+  --accent-violet:    #8b5cf6;
+  --accent-violet-soft:#f0e9ff;
+
+  /* ─── Platform colors (vivid + readable) ─── */
+  --shopify:          #1f9d55;
+  --shopify-deep:     #146c3a;
+  --shopify-soft:     #e3f7eb;
+  --google:           #2563eb;
+  --google-deep:      #1a4ab5;
+  --google-soft:      #e3edff;
+  --xero:             #0891b2;
+  --xero-deep:        #075f7a;
+  --xero-soft:        #e0f4f8;
+
+  /* ─── Type ─── */
+  --font-sans:        'Geist', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-mono:        'Geist Mono', 'JetBrains Mono', monospace;
+
+  /* ─── Radius ─── */
   --r-sm:             6px;
   --r-md:             10px;
   --r-lg:             14px;
   --r-xl:             18px;
-  --shadow-1:         0 1px 2px rgba(13,17,23,.04), 0 1px 1px rgba(13,17,23,.02);
-  --shadow-2:         0 1px 3px rgba(13,17,23,.06), 0 4px 12px rgba(13,17,23,.04);
-  --shadow-3:         0 4px 8px rgba(13,17,23,.06), 0 12px 32px rgba(13,17,23,.06);
+  --r-2xl:            22px;
 
-  /* Layout */
-  --rail-w:           240px;
-  --content-max:      1320px;
+  /* ─── Shadows (warmer, subtle) ─── */
+  --shadow-1:         0 1px 2px rgba(34, 31, 99, .04), 0 1px 1px rgba(34, 31, 99, .03);
+  --shadow-2:         0 2px 4px rgba(34, 31, 99, .05), 0 4px 12px rgba(34, 31, 99, .05);
+  --shadow-3:         0 6px 12px rgba(34, 31, 99, .07), 0 16px 40px rgba(34, 31, 99, .08);
+  --shadow-glow:      0 0 0 4px rgba(91, 92, 240, .12);
+
+  /* ─── Layout ─── */
+  --rail-w:           260px;
+  --content-max:      1340px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -96,8 +136,8 @@ input{font-family:inherit}
 .topbar{
   position:sticky;top:0;z-index:50;
   display:flex;align-items:center;gap:24px;
-  padding:0 28px;height:60px;
-  background:rgba(255,255,255,.85);
+  padding:0 28px;height:64px;
+  background:rgba(255,255,255,.88);
   backdrop-filter:saturate(180%) blur(14px);
   -webkit-backdrop-filter:saturate(180%) blur(14px);
   border-bottom:1px solid var(--line);
@@ -107,29 +147,31 @@ input{font-family:inherit}
   font-weight:700;font-size:15px;letter-spacing:-.01em;
 }
 .brand-mark{
-  width:28px;height:28px;border-radius:8px;
-  background:linear-gradient(135deg,var(--brand) 0%,var(--brand-deep) 100%);
+  width:30px;height:30px;border-radius:9px;
+  background:linear-gradient(135deg,var(--primary-500) 0%,var(--primary-700) 100%);
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;font-size:13px;
+  color:#fff;font-weight:800;font-size:14px;
+  box-shadow:0 2px 6px rgba(91,92,240,.35);
 }
 .brand em{font-style:normal;color:var(--ink-3);font-weight:500}
 .context-pill{
   display:flex;align-items:center;gap:8px;
-  padding:6px 12px;border-radius:99px;
-  background:var(--surface-2);
-  font-size:12px;font-weight:500;color:var(--ink-2);
+  padding:7px 13px;border-radius:99px;
+  background:var(--primary-50);
+  font-size:12px;font-weight:600;color:var(--primary-700);
+  border:1px solid var(--primary-100);
 }
-.context-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--pos)}
+.context-pill::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--pos);box-shadow:0 0 0 3px rgba(31,157,85,.18)}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
 
 .api-field{
   display:flex;align-items:center;gap:8px;
-  padding:6px 12px;border-radius:8px;
+  padding:7px 12px;border-radius:9px;
   background:var(--surface-2);
   border:1px solid var(--line);
   transition:all .15s;
 }
-.api-field:focus-within{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-soft)}
+.api-field:focus-within{border-color:var(--primary-500);background:var(--surface);box-shadow:var(--shadow-glow)}
 .api-field svg{flex-shrink:0;color:var(--ink-3)}
 .api-input{
   border:none;background:transparent;outline:none;
@@ -140,13 +182,19 @@ input{font-family:inherit}
 
 .btn-primary{
   display:inline-flex;align-items:center;gap:7px;
-  padding:8px 16px;border-radius:8px;
-  background:var(--ink-1);color:#fff;
+  padding:9px 16px;border-radius:9px;
+  background:linear-gradient(135deg,var(--primary-500) 0%,var(--primary-600) 100%);
+  color:#fff;
   font-size:13px;font-weight:600;letter-spacing:-.005em;
-  transition:all .15s;box-shadow:var(--shadow-1);
+  transition:all .15s;
+  box-shadow:0 1px 2px rgba(91,92,240,.4), 0 2px 4px rgba(91,92,240,.18);
 }
-.btn-primary:hover:not(:disabled){background:var(--ink-2);transform:translateY(-1px);box-shadow:var(--shadow-2)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary:hover:not(:disabled){
+  background:linear-gradient(135deg,var(--primary-600) 0%,var(--primary-700) 100%);
+  transform:translateY(-1px);
+  box-shadow:0 2px 4px rgba(91,92,240,.45), 0 6px 14px rgba(91,92,240,.28);
+}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
 .btn-primary svg{width:14px;height:14px}
 
 /* ═══════════════════════════════════════════════════════════════
@@ -158,11 +206,11 @@ input{font-family:inherit}
   min-height:calc(100vh - 60px);
 }
 
-/* ── Side rail (anchor navigation) ── */
+/* ─── Side rail (anchor navigation) ── */
 .rail{
-  position:sticky;top:60px;
-  height:calc(100vh - 60px);
-  padding:28px 18px;
+  position:sticky;top:64px;
+  height:calc(100vh - 64px);
+  padding:24px 16px;
   border-right:1px solid var(--line);
   background:var(--surface);
   overflow-y:auto;
@@ -170,46 +218,113 @@ input{font-family:inherit}
 .rail-section{margin-bottom:28px}
 .rail-section:last-child{margin-bottom:0}
 .rail-label{
-  font-size:11px;font-weight:600;
-  color:var(--ink-4);text-transform:uppercase;letter-spacing:.05em;
+  font-size:11px;font-weight:700;
+  color:var(--ink-4);text-transform:uppercase;letter-spacing:.06em;
   padding:0 10px 10px;
   display:flex;align-items:center;gap:6px;
 }
 .rail-link{
-  display:flex;align-items:center;gap:10px;
-  padding:8px 10px;border-radius:7px;
-  font-size:13px;font-weight:500;color:var(--ink-2);
+  position:relative;
+  display:flex;align-items:center;gap:11px;
+  padding:9px 11px;border-radius:8px;
+  font-size:13.5px;font-weight:500;color:var(--ink-2);
   cursor:pointer;text-decoration:none;
   transition:all .12s;width:100%;text-align:left;
+  margin-bottom:2px;
 }
 .rail-link:hover{background:var(--surface-2);color:var(--ink-1)}
-.rail-link.active{background:var(--surface-2);color:var(--ink-1);font-weight:600}
-.rail-link svg{width:15px;height:15px;color:var(--ink-3);flex-shrink:0}
-.rail-link.active svg{color:var(--brand)}
+.rail-link.active{
+  background:var(--primary-50);
+  color:var(--primary-700);
+  font-weight:600;
+}
+.rail-link.active::before{
+  content:'';position:absolute;left:-16px;top:50%;transform:translateY(-50%);
+  width:3px;height:18px;background:var(--primary-600);
+  border-radius:0 2px 2px 0;
+}
+.rail-link svg{width:16px;height:16px;color:var(--ink-3);flex-shrink:0;transition:color .12s}
+.rail-link:hover svg{color:var(--ink-2)}
+.rail-link.active svg{color:var(--primary-600)}
 .rail-link-count{
-  margin-left:auto;font-size:11px;font-weight:600;
+  margin-left:auto;font-size:11px;font-weight:700;
   color:var(--ink-4);font-family:var(--font-mono);
+  padding:1px 7px;border-radius:99px;
+  background:var(--surface-2);
 }
 .rail-link.has-alert .rail-link-count{
-  background:var(--neg-soft);color:var(--neg);
-  padding:1px 7px;border-radius:99px;
+  background:var(--neg-soft);color:var(--neg-deep);
+}
+.rail-link.active .rail-link-count{
+  background:var(--primary-100);color:var(--primary-700);
 }
 
-/* Anomaly mini-cards in rail */
-.anomalies{display:flex;flex-direction:column;gap:6px;padding:0 4px}
-.anomaly-mini{
-  display:flex;flex-direction:column;gap:2px;
-  padding:9px 11px;border-radius:8px;
-  background:var(--surface-2);
-  border-left:2px solid var(--ink-4);
-  font-size:12px;
+/* ── Needs Attention panel (rebuilt) ── */
+.attention-header{
+  padding:0 10px 14px;
 }
-.anomaly-mini.anom-high{border-left-color:var(--neg);background:var(--neg-soft)}
-.anomaly-mini.anom-med{border-left-color:var(--warn);background:var(--warn-soft)}
-.anomaly-mini-title{font-weight:600;color:var(--ink-1);font-size:12.5px}
-.anomaly-mini-delta{font-size:11px;color:var(--ink-3);font-family:var(--font-mono)}
-.anomaly-mini.anom-high .anomaly-mini-delta{color:var(--neg)}
-.anomaly-mini.anom-med .anomaly-mini-delta{color:var(--warn)}
+.attention-title{
+  font-size:12px;font-weight:800;
+  color:var(--ink-1);text-transform:uppercase;letter-spacing:.07em;
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;
+}
+.attention-title-icon{
+  width:18px;height:18px;border-radius:5px;
+  background:var(--warn);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;
+}
+.attention-sub{
+  font-size:12px;color:var(--ink-3);line-height:1.5;
+  font-weight:500;text-transform:none;letter-spacing:0;
+}
+.anomalies{display:flex;flex-direction:column;gap:8px;padding:0 4px}
+.anomaly-mini{
+  position:relative;
+  display:flex;flex-direction:column;gap:3px;
+  padding:11px 13px 12px 16px;border-radius:9px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  font-size:12px;
+  transition:all .12s;cursor:pointer;
+  overflow:hidden;
+  box-shadow:0 1px 2px rgba(34,31,99,.03);
+}
+.anomaly-mini::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:4px;background:var(--ink-5);
+}
+.anomaly-mini:hover{
+  border-color:var(--line-2);
+  box-shadow:var(--shadow-2);
+  transform:translateX(1px);
+}
+.anomaly-mini.anom-high{
+  background:linear-gradient(90deg,#fff5f5 0%,#fff 70%);
+  border-color:#f5b4ad;
+}
+.anomaly-mini.anom-high::before{background:var(--neg)}
+.anomaly-mini.anom-med{
+  background:linear-gradient(90deg,#fff9ed 0%,#fff 70%);
+  border-color:#f5cd87;
+}
+.anomaly-mini.anom-med::before{background:var(--warn)}
+.anomaly-mini-row{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:3px;
+}
+.anomaly-mini.anom-high .anomaly-mini-row{color:var(--neg-deep)}
+.anomaly-mini.anom-med .anomaly-mini-row{color:var(--warn-deep)}
+.anomaly-mini-row::before{
+  content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+.anomaly-mini.anom-high .anomaly-mini-row::before{background:var(--neg);box-shadow:0 0 0 2px rgba(224,57,76,.18)}
+.anomaly-mini.anom-med .anomaly-mini-row::before{background:var(--warn);box-shadow:0 0 0 2px rgba(217,119,6,.18)}
+.anomaly-mini-title{font-weight:700;color:var(--ink-1);font-size:13px;line-height:1.3;letter-spacing:-.005em}
+.anomaly-mini-delta{font-size:11px;color:var(--ink-3);font-family:var(--font-mono);margin-top:3px}
+.anomaly-mini.anom-high .anomaly-mini-delta{color:var(--neg-deep);font-weight:600}
+.anomaly-mini.anom-med .anomaly-mini-delta{color:var(--warn-deep);font-weight:600}
 
 /* ═══════════════════════════════════════════════════════════════
    MAIN CONTENT
@@ -218,61 +333,129 @@ input{font-family:inherit}
 
 /* ── Page header ── */
 .page-head{
-  display:flex;align-items:flex-end;justify-content:space-between;
-  gap:24px;margin-bottom:32px;
+  display:flex;flex-direction:column;
+  gap:18px;margin-bottom:36px;
 }
-.page-head-l{flex:1;min-width:0}
+.page-head-l{flex:1;min-width:0;max-width:780px}
 .eyebrow{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:12px;font-weight:600;color:var(--ink-3);
-  margin-bottom:8px;letter-spacing:.01em;
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:700;color:var(--primary-700);
+  margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase;
+  padding:5px 11px;border-radius:99px;
+  background:var(--primary-50);
+  border:1px solid var(--primary-100);
 }
-.eyebrow::before{content:'';width:14px;height:1.5px;background:var(--brand);border-radius:2px}
+.eyebrow::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--primary-500)}
 .page-title{
-  font-size:30px;font-weight:700;letter-spacing:-.025em;
-  color:var(--ink-1);line-height:1.15;margin-bottom:8px;
+  font-size:34px;font-weight:800;letter-spacing:-.028em;
+  color:var(--ink-1);line-height:1.15;margin-bottom:14px;
 }
-.page-sub{font-size:14px;color:var(--ink-3);max-width:640px}
+.page-sub{font-size:15px;color:var(--ink-3);max-width:720px;line-height:1.6}
 
 .data-source-row{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  font-size:12px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  font-size:12px;padding-top:6px;
 }
-.data-source-row-label{color:var(--ink-4);margin-right:2px}
+.data-source-row-label{color:var(--ink-4);margin-right:4px;font-weight:500;font-size:12px}
 .platform-pill{
   display:inline-flex;align-items:center;gap:6px;
-  padding:4px 10px;border-radius:99px;
-  font-size:11.5px;font-weight:500;
+  padding:5px 11px;border-radius:99px;
+  font-size:11.5px;font-weight:600;
   background:var(--surface);border:1px solid var(--line);
+  color:var(--ink-2);
 }
 .platform-pill .dot{width:6px;height:6px;border-radius:50%}
-.platform-pill.shopify{color:var(--shopify);background:var(--shopify-soft);border-color:transparent}
+.platform-pill.shopify{color:var(--shopify-deep);background:var(--shopify-soft);border-color:transparent}
 .platform-pill.shopify .dot{background:var(--shopify)}
-.platform-pill.google{color:var(--google);background:var(--google-soft);border-color:transparent}
+.platform-pill.google{color:var(--google-deep);background:var(--google-soft);border-color:transparent}
 .platform-pill.google .dot{background:var(--google)}
-.platform-pill.xero{color:var(--xero);background:var(--xero-soft);border-color:transparent}
+.platform-pill.xero{color:var(--xero-deep);background:var(--xero-soft);border-color:transparent}
 .platform-pill.xero .dot{background:var(--xero)}
 
 /* ── Section blocks ── */
-.section{margin-bottom:48px;scroll-margin-top:80px}
+.section{margin-bottom:52px;scroll-margin-top:84px}
 .section:last-child{margin-bottom:0}
 .section-head{
   display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
-  margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line);
+  margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--line);
 }
 .section-head-l{flex:1;min-width:0}
 .section-title{
-  font-size:18px;font-weight:700;letter-spacing:-.015em;
-  color:var(--ink-1);margin-bottom:4px;
-  display:flex;align-items:center;gap:10px;
+  font-size:22px;font-weight:800;letter-spacing:-.025em;
+  color:var(--ink-1);margin-bottom:6px;
+  display:flex;align-items:center;gap:14px;
 }
 .section-num{
   display:inline-flex;align-items:center;justify-content:center;
-  width:22px;height:22px;border-radius:6px;
-  background:var(--surface-2);color:var(--ink-3);
-  font-size:11px;font-weight:600;font-family:var(--font-mono);
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--primary-500) 0%,var(--primary-700) 100%);
+  color:#fff;
+  font-size:13px;font-weight:800;font-family:var(--font-mono);
+  box-shadow:0 1px 3px rgba(91,92,240,.35),0 4px 10px rgba(91,92,240,.18);
+  letter-spacing:-.01em;
 }
-.section-sub{font-size:13px;color:var(--ink-3)}
+.section-sub{font-size:13.5px;color:var(--ink-3);line-height:1.55;margin-left:48px}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONNECTOR STATUS STRIP (top of page)
+   ═══════════════════════════════════════════════════════════════ */
+.connector-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-bottom:36px;
+}
+.connector-card{
+  position:relative;
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--line);
+  transition:all .15s;text-decoration:none;
+  overflow:hidden;
+}
+.connector-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+}
+.connector-card.shopify::before{background:var(--shopify)}
+.connector-card.google::before{background:var(--google)}
+.connector-card.xero::before{background:var(--xero)}
+.connector-card:hover{
+  border-color:var(--line-2);
+  box-shadow:var(--shadow-1);
+}
+
+/* Brand logo container */
+.connector-logo{
+  width:44px;height:44px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;background:#fff;
+  border:1px solid var(--line);
+  box-shadow:0 1px 2px rgba(34,31,99,.04);
+}
+.connector-logo svg{width:26px;height:26px;display:block}
+
+.connector-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.connector-name-row{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+}
+.connector-name{
+  font-size:15px;font-weight:700;color:var(--ink-1);
+  letter-spacing:-.012em;line-height:1.2;
+}
+.connector-status{
+  font-size:12px;color:var(--ink-3);font-weight:500;
+  display:flex;align-items:center;gap:7px;line-height:1.35;
+}
+.connector-status::before{
+  content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;
+  background:var(--pos);box-shadow:0 0 0 3px rgba(31,157,85,.2);
+}
+.connector-badge{
+  display:inline-flex;align-items:center;
+  padding:3px 9px;border-radius:99px;
+  font-size:9.5px;font-weight:800;letter-spacing:.06em;
+  background:var(--pos-soft);color:var(--pos-deep);
+  text-transform:uppercase;
+  border:1px solid rgba(31,157,85,.2);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    KPI HERO BENTO
@@ -287,35 +470,52 @@ input{font-family:inherit}
   padding:22px 24px;border-radius:var(--r-lg);
   background:var(--surface);border:1px solid var(--line);
   transition:all .18s;display:flex;flex-direction:column;gap:6px;
-  min-height:128px;
+  min-height:134px;overflow:hidden;
 }
-.kpi-tile:hover{box-shadow:var(--shadow-2);transform:translateY(-1px)}
+.kpi-tile::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--ink-5);opacity:0;transition:opacity .18s;
+}
+.kpi-tile:hover{box-shadow:var(--shadow-2);transform:translateY(-2px);border-color:var(--line-2)}
+.kpi-tile:hover::after{opacity:.55}
 .kpi-tile.hero{
-  background:linear-gradient(135deg,var(--ink-1) 0%,#1d2329 100%);
+  background:linear-gradient(135deg,var(--primary-700) 0%,var(--primary-900) 100%);
   border-color:transparent;color:#fff;
+  box-shadow:0 2px 6px rgba(34,31,99,.18),0 8px 24px rgba(34,31,99,.12);
 }
-.kpi-tile.hero .kpi-label,.kpi-tile.hero .kpi-foot{color:rgba(255,255,255,.65)}
+.kpi-tile.hero::before{
+  content:'';position:absolute;top:0;right:0;width:140px;height:140px;
+  background:radial-gradient(circle at center,rgba(255,255,255,.10) 0%,rgba(255,255,255,0) 70%);
+  pointer-events:none;
+}
+.kpi-tile.hero::after{display:none}
+.kpi-tile.hero .kpi-label,.kpi-tile.hero .kpi-foot{color:rgba(255,255,255,.7)}
 .kpi-tile.hero .kpi-value{color:#fff}
+.kpi-tile.kpi-warn::after{background:var(--warn)}
+.kpi-tile.kpi-neg::after{background:var(--neg)}
+.kpi-tile.kpi-warn:hover::after,.kpi-tile.kpi-neg:hover::after{opacity:1}
 .kpi-label{
-  font-size:12px;font-weight:500;color:var(--ink-3);
+  font-size:11.5px;font-weight:600;color:var(--ink-3);
   display:flex;align-items:center;justify-content:space-between;
+  text-transform:uppercase;letter-spacing:.04em;
 }
 .kpi-value{
-  font-size:32px;font-weight:700;letter-spacing:-.02em;
+  font-size:32px;font-weight:800;letter-spacing:-.025em;
   color:var(--ink-1);line-height:1.1;margin-top:4px;
   font-variant-numeric:tabular-nums;
 }
 .kpi-delta{
   display:inline-flex;align-items:center;gap:4px;
-  font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;
-  padding:3px 8px;border-radius:99px;width:fit-content;
+  font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;
+  padding:3px 9px;border-radius:99px;width:fit-content;
   font-family:var(--font-mono);
+  margin-top:4px;
 }
-.kpi-delta.pos{color:var(--pos);background:var(--pos-soft)}
-.kpi-delta.neg{color:var(--neg);background:var(--neg-soft)}
-.kpi-delta.warn{color:var(--warn);background:var(--warn-soft)}
-.kpi-tile.hero .kpi-delta.pos{background:rgba(10,141,74,.2);color:#7ee8a8}
-.kpi-foot{font-size:11.5px;color:var(--ink-4);margin-top:auto}
+.kpi-delta.pos{color:var(--pos-deep);background:var(--pos-soft)}
+.kpi-delta.neg{color:var(--neg-deep);background:var(--neg-soft)}
+.kpi-delta.warn{color:var(--warn-deep);background:var(--warn-soft)}
+.kpi-tile.hero .kpi-delta.pos{background:rgba(255,255,255,.18);color:#a7f3c8}
+.kpi-foot{font-size:11.5px;color:var(--ink-4);margin-top:auto;font-weight:500}
 
 /* ═══════════════════════════════════════════════════════════════
    CHARTS GRID
@@ -332,67 +532,246 @@ input{font-family:inherit}
   background:var(--surface);border:1px solid var(--line);
   transition:all .18s;
 }
-.chart-card:hover{box-shadow:var(--shadow-2)}
+.chart-card:hover{box-shadow:var(--shadow-2);border-color:var(--line-2);transform:translateY(-1px)}
 .chart-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
-.chart-card-title{font-size:13px;font-weight:600;color:var(--ink-1);line-height:1.3}
-.chart-card-sub{font-size:11px;color:var(--ink-4);margin-bottom:14px}
+.chart-card-title{font-size:13.5px;font-weight:600;color:var(--ink-1);line-height:1.3;letter-spacing:-.005em}
+.chart-card-sub{font-size:11px;color:var(--ink-4);margin-bottom:14px;font-weight:500}
 .chart-trend{
   display:inline-flex;align-items:center;gap:3px;
-  font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;
-  padding:2px 7px;border-radius:99px;
+  font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;
+  padding:3px 8px;border-radius:99px;
   font-family:var(--font-mono);flex-shrink:0;
 }
-.chart-trend.pos{color:var(--pos);background:var(--pos-soft)}
-.chart-trend.neg{color:var(--neg);background:var(--neg-soft)}
-.chart-trend.warn{color:var(--warn);background:var(--warn-soft)}
+.chart-trend.pos{color:var(--pos-deep);background:var(--pos-soft)}
+.chart-trend.neg{color:var(--neg-deep);background:var(--neg-soft)}
+.chart-trend.warn{color:var(--warn-deep);background:var(--warn-soft)}
 
 /* ═══════════════════════════════════════════════════════════════
-   ANALYSIS — Platform tabs + cards
+   AI ANALYSIS SECTION — High-prominence treatment
+   ═══════════════════════════════════════════════════════════════ */
+.ai-section{
+  position:relative;
+  padding:32px 32px 36px;
+  border-radius:var(--r-xl);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(139,92,246,.16) 0%, rgba(139,92,246,0) 38%),
+    radial-gradient(circle at 6% 92%, rgba(6,182,212,.10) 0%, rgba(6,182,212,0) 42%),
+    radial-gradient(circle at 50% 50%, rgba(91,92,240,.04) 0%, rgba(91,92,240,0) 60%),
+    linear-gradient(135deg, #f7f5ff 0%, #f0f3ff 60%, #f4f1ff 100%);
+  border:1px solid var(--primary-200);
+  box-shadow:
+    0 1px 2px rgba(34,31,99,.04),
+    0 8px 32px rgba(91,92,240,.10),
+    inset 0 1px 0 rgba(255,255,255,.6);
+  overflow:hidden;
+}
+.ai-section::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--primary-500) 0%,var(--accent-violet) 40%,var(--accent-cyan) 100%);
+  box-shadow:0 0 16px rgba(139,92,246,.4);
+}
+/* Ambient sparkles top-right */
+.ai-section::after{
+  content:'';position:absolute;top:24px;right:32px;
+  width:120px;height:120px;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(139,92,246,.5) 0%, transparent 1.5px),
+    radial-gradient(circle at 70% 60%, rgba(91,92,240,.4) 0%, transparent 1px),
+    radial-gradient(circle at 85% 25%, rgba(6,182,212,.5) 0%, transparent 1.2px),
+    radial-gradient(circle at 45% 80%, rgba(139,92,246,.4) 0%, transparent 1px),
+    radial-gradient(circle at 15% 70%, rgba(91,92,240,.35) 0%, transparent 1.3px);
+  background-size:100% 100%;
+  pointer-events:none;opacity:.7;
+}
+
+.ai-section-head{
+  position:relative;z-index:2;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  margin-bottom:24px;padding-bottom:20px;
+  border-bottom:1px solid rgba(91,92,240,.15);
+}
+.ai-section-title{
+  font-size:24px;font-weight:800;letter-spacing:-.025em;
+  color:var(--ink-1);margin-bottom:8px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.ai-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:99px;
+  font-size:11px;font-weight:800;letter-spacing:.07em;
+  background:linear-gradient(135deg,var(--primary-500) 0%,var(--accent-violet) 100%);
+  color:#fff;text-transform:uppercase;
+  box-shadow:0 2px 6px rgba(91,92,240,.45),0 1px 2px rgba(91,92,240,.3);
+  position:relative;
+}
+.ai-badge::before{
+  content:'✦';font-size:13px;
+  animation:sparkleAnim 2.4s ease-in-out infinite;
+}
+@keyframes sparkleAnim{
+  0%,100%{transform:scale(1) rotate(0deg);opacity:1}
+  50%{transform:scale(1.15) rotate(180deg);opacity:.8}
+}
+.ai-section-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary-500) 0%,var(--accent-violet) 100%);
+  color:#fff;
+  font-size:14px;font-weight:800;font-family:var(--font-mono);
+  box-shadow:0 2px 6px rgba(139,92,246,.45),0 1px 2px rgba(139,92,246,.3);
+  letter-spacing:-.01em;
+}
+.ai-section-sub{font-size:14px;color:var(--ink-3);line-height:1.6;margin-left:52px;max-width:680px}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYSIS — Platform tabs (color-coded)
    ═══════════════════════════════════════════════════════════════ */
 .platform-switcher{
-  display:flex;gap:4px;padding:4px;
-  background:var(--surface-2);border-radius:10px;
-  margin-bottom:24px;width:fit-content;
+  position:relative;z-index:2;
+  display:flex;gap:4px;padding:5px;
+  background:rgba(255,255,255,.85);
+  border:1px solid var(--primary-100);
+  border-radius:11px;
+  margin-bottom:20px;width:fit-content;
+  box-shadow:0 1px 2px rgba(34,31,99,.04);
 }
 .platform-switcher button{
   display:inline-flex;align-items:center;gap:7px;
-  padding:8px 14px;border-radius:7px;
+  padding:8px 14px;border-radius:8px;
   font-size:13px;font-weight:500;color:var(--ink-3);
   transition:all .15s;
 }
-.platform-switcher button:hover{color:var(--ink-1)}
-.platform-switcher button.active{background:var(--surface);color:var(--ink-1);font-weight:600;box-shadow:var(--shadow-1)}
-.platform-switcher .pdot{width:7px;height:7px;border-radius:50%}
+.platform-switcher button:hover{color:var(--ink-1);background:rgba(255,255,255,.6)}
+/* Active state — color-coded per platform */
+.platform-switcher button.active{font-weight:700;box-shadow:0 1px 3px rgba(34,31,99,.10),0 1px 1px rgba(34,31,99,.04)}
+.platform-switcher button.active[onclick*="shopify"]{background:var(--shopify-soft);color:var(--shopify-deep)}
+.platform-switcher button.active[onclick*="googleads"]{background:var(--google-soft);color:var(--google-deep)}
+.platform-switcher button.active[onclick*="xero"]{background:var(--xero-soft);color:var(--xero-deep)}
+.platform-switcher button.active[onclick*="summary"]{background:var(--primary-50);color:var(--primary-700)}
+.platform-switcher .pdot{width:8px;height:8px;border-radius:50%}
 
-.platform-panel{display:none}
-.platform-panel.active{display:block}
+.platform-panel{display:none;position:relative;z-index:2}
+.platform-panel.active{display:block;animation:fadeInPanel .25s ease-out}
+@keyframes fadeInPanel{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
+/* Platform summary bar — color-coded per platform */
 .platform-summary{
+  position:relative;
   display:flex;align-items:center;gap:14px;
   padding:16px 20px;border-radius:var(--r-md);
-  background:var(--surface-2);margin-bottom:18px;
+  margin-bottom:16px;
+  overflow:hidden;
 }
+.platform-summary::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+}
+#platform-shopify .platform-summary{
+  background:linear-gradient(135deg,var(--shopify-soft) 0%,rgba(31,157,85,.04) 100%);
+  border:1px solid rgba(31,157,85,.18);
+}
+#platform-shopify .platform-summary::before{background:var(--shopify)}
+#platform-googleads .platform-summary{
+  background:linear-gradient(135deg,var(--google-soft) 0%,rgba(37,99,235,.04) 100%);
+  border:1px solid rgba(37,99,235,.18);
+}
+#platform-googleads .platform-summary::before{background:var(--google)}
+#platform-xero .platform-summary{
+  background:linear-gradient(135deg,var(--xero-soft) 0%,rgba(8,145,178,.04) 100%);
+  border:1px solid rgba(8,145,178,.18);
+}
+#platform-xero .platform-summary::before{background:var(--xero)}
+#platform-summary .platform-summary{
+  background:linear-gradient(135deg,var(--primary-50) 0%,rgba(91,92,240,.04) 100%);
+  border:1px solid var(--primary-200);
+}
+#platform-summary .platform-summary::before{background:var(--primary-600)}
+
 .platform-summary-icon{
-  width:36px;height:36px;border-radius:8px;
+  width:42px;height:42px;border-radius:11px;
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
+  font-size:20px;flex-shrink:0;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(34,31,99,.06);
 }
-.platform-summary-icon.shopify{background:var(--shopify-soft);color:var(--shopify)}
-.platform-summary-icon.google{background:var(--google-soft);color:var(--google)}
-.platform-summary-icon.xero{background:var(--xero-soft);color:var(--xero)}
-.platform-summary-icon.all{background:var(--brand-soft);color:var(--brand)}
+.platform-summary-icon.shopify{color:var(--shopify-deep)}
+.platform-summary-icon.google{color:var(--google-deep)}
+.platform-summary-icon.xero{color:var(--xero-deep)}
+.platform-summary-icon.all{color:var(--primary-700)}
 .platform-summary-text{flex:1;min-width:0}
-.platform-summary-title{font-size:14px;font-weight:600;color:var(--ink-1);margin-bottom:2px}
-.platform-summary-sub{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.platform-summary-title{font-size:15px;font-weight:700;color:var(--ink-1);margin-bottom:3px;letter-spacing:-.01em}
+.platform-summary-sub{font-size:13px;color:var(--ink-2);line-height:1.5}
+
+/* Analysis cards now pick up subtle platform tint */
+#platform-shopify .analysis-card{border-color:rgba(31,157,85,.14)}
+#platform-shopify .analysis-card:hover{border-color:rgba(31,157,85,.32);box-shadow:0 2px 4px rgba(31,157,85,.05),0 4px 12px rgba(31,157,85,.08)}
+#platform-shopify .card-emoji{background:var(--shopify-soft);border-color:rgba(31,157,85,.18);color:var(--shopify-deep)}
+
+#platform-googleads .analysis-card{border-color:rgba(37,99,235,.14)}
+#platform-googleads .analysis-card:hover{border-color:rgba(37,99,235,.32);box-shadow:0 2px 4px rgba(37,99,235,.05),0 4px 12px rgba(37,99,235,.08)}
+#platform-googleads .card-emoji{background:var(--google-soft);border-color:rgba(37,99,235,.18);color:var(--google-deep)}
+
+#platform-xero .analysis-card{border-color:rgba(8,145,178,.14)}
+#platform-xero .analysis-card:hover{border-color:rgba(8,145,178,.32);box-shadow:0 2px 4px rgba(8,145,178,.05),0 4px 12px rgba(8,145,178,.08)}
+#platform-xero .card-emoji{background:var(--xero-soft);border-color:rgba(8,145,178,.18);color:var(--xero-deep)}
+
+#platform-summary .analysis-card{border-color:var(--primary-200)}
+#platform-summary .analysis-card:hover{border-color:var(--primary-300);box-shadow:0 2px 4px rgba(91,92,240,.05),0 4px 12px rgba(91,92,240,.08)}
+#platform-summary .card-emoji{background:var(--primary-50);border-color:var(--primary-200);color:var(--primary-700)}
+
+/* ── Connector card inside AI Analysis (larger version) ── */
+.ai-connector-row{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin-bottom:20px;
+}
+.ai-connector{
+  display:flex;align-items:center;gap:11px;
+  padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,.85);
+  border:1px solid var(--line);
+  cursor:pointer;transition:all .15s;
+  position:relative;overflow:hidden;
+}
+.ai-connector::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+}
+.ai-connector.shopify::before{background:var(--shopify)}
+.ai-connector.google::before{background:var(--google)}
+.ai-connector.xero::before{background:var(--xero)}
+.ai-connector:hover{
+  background:#fff;border-color:var(--line-2);
+  box-shadow:var(--shadow-1);transform:translateY(-1px);
+}
+.ai-connector-logo{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;background:#fff;
+  border:1px solid var(--line);
+  box-shadow:0 1px 2px rgba(34,31,99,.03);
+}
+.ai-connector-logo svg{width:20px;height:20px;display:block}
+.ai-connector-info{flex:1;min-width:0}
+.ai-connector-name{font-size:12.5px;font-weight:700;color:var(--ink-1);line-height:1.2}
+.ai-connector-meta{font-size:10.5px;color:var(--ink-3);margin-top:3px;font-weight:500;display:flex;align-items:center;gap:5px}
+.ai-connector-meta::before{
+  content:'';width:5px;height:5px;border-radius:50%;background:var(--pos);flex-shrink:0;
+}
+.ai-connector-arrow{
+  color:var(--ink-4);flex-shrink:0;transition:transform .15s;
+}
+.ai-connector:hover .ai-connector-arrow{color:var(--primary-600);transform:translateX(2px)}
 
 /* ── Analysis card ── */
 .analysis-card{
   background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-lg);margin-bottom:14px;overflow:hidden;
-  transition:box-shadow .18s;
+  border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;
+  transition:all .18s;
 }
-.analysis-card:hover{box-shadow:var(--shadow-1)}
-.analysis-card.is-running{box-shadow:0 0 0 2px var(--brand-soft),var(--shadow-1)}
+.analysis-card:hover{box-shadow:var(--shadow-2);border-color:var(--line-2)}
+.analysis-card.is-running{box-shadow:0 0 0 3px var(--primary-100),var(--shadow-1)}
 
 .card-head{
   display:flex;align-items:center;gap:14px;
@@ -401,13 +780,14 @@ input{font-family:inherit}
 }
 .card-head:hover{background:var(--surface-2)}
 .card-emoji{
-  width:38px;height:38px;border-radius:10px;
-  background:var(--surface-2);
+  width:40px;height:40px;border-radius:11px;
+  background:var(--primary-50);
   display:flex;align-items:center;justify-content:center;
   font-size:18px;flex-shrink:0;
+  border:1px solid var(--primary-100);
 }
 .card-meta{flex:1;min-width:0}
-.card-title{font-size:14.5px;font-weight:600;color:var(--ink-1);letter-spacing:-.005em;margin-bottom:3px}
+.card-title{font-size:15px;font-weight:700;color:var(--ink-1);letter-spacing:-.01em;margin-bottom:3px}
 .card-sub{font-size:12.5px;color:var(--ink-3);line-height:1.5}
 .card-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
 
@@ -415,35 +795,43 @@ input{font-family:inherit}
 .status-chip{
   display:inline-flex;align-items:center;gap:5px;
   padding:4px 10px;border-radius:99px;
-  font-size:11.5px;font-weight:500;
+  font-size:11px;font-weight:600;
   background:var(--surface-2);color:var(--ink-3);
 }
 .status-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ink-4)}
-.status-chip.chip-running{background:var(--info-soft);color:var(--info)}
+.status-chip.chip-running{background:var(--info-soft);color:var(--info-deep)}
 .status-chip.chip-running::before{background:var(--info);animation:pulse 1.4s infinite}
-.status-chip.chip-done{background:var(--pos-soft);color:var(--pos)}
+.status-chip.chip-done{background:var(--pos-soft);color:var(--pos-deep)}
 .status-chip.chip-done::before{background:var(--pos)}
-.status-chip.chip-error{background:var(--neg-soft);color:var(--neg)}
+.status-chip.chip-error{background:var(--neg-soft);color:var(--neg-deep)}
 .status-chip.chip-error::before{background:var(--neg)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 
 /* Run button (analysis cards) */
 .run-btn{
   display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;border-radius:7px;
+  padding:8px 14px;border-radius:8px;
   font-size:12.5px;font-weight:600;
-  background:var(--ink-1);color:#fff;
+  background:linear-gradient(135deg,var(--primary-500) 0%,var(--primary-600) 100%);
+  color:#fff;
   transition:all .15s;
+  box-shadow:0 1px 2px rgba(91,92,240,.3);
 }
-.run-btn:hover:not(:disabled){background:var(--ink-2);transform:translateY(-1px)}
+.run-btn:hover:not(:disabled){
+  background:linear-gradient(135deg,var(--primary-600) 0%,var(--primary-700) 100%);
+  transform:translateY(-1px);
+  box-shadow:0 2px 4px rgba(91,92,240,.4);
+}
 .run-btn:disabled{opacity:.5;cursor:not-allowed}
 .run-btn svg{width:11px;height:11px}
 
 .chev{
-  width:24px;height:24px;border-radius:6px;
+  width:26px;height:26px;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
-  color:var(--ink-4);transition:transform .2s;
+  color:var(--ink-4);transition:all .2s;
+  background:var(--surface-2);
 }
+.chev:hover{background:var(--surface-3);color:var(--ink-2)}
 .chev.open{transform:rotate(180deg)}
 .chev svg{width:12px;height:12px}
 
@@ -457,9 +845,10 @@ input{font-family:inherit}
 .empty-state{
   text-align:center;padding:40px 24px;
   background:var(--surface-2);border-radius:var(--r-md);
+  border:1px dashed var(--line-2);
 }
-.empty-state-icon{font-size:28px;margin-bottom:10px;opacity:.7}
-.empty-state-title{font-size:14px;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.empty-state-icon{font-size:30px;margin-bottom:10px;opacity:.75}
+.empty-state-title{font-size:14px;font-weight:700;color:var(--ink-2);margin-bottom:6px}
 .empty-state-desc{font-size:13px;color:var(--ink-3);max-width:440px;margin:0 auto;line-height:1.6}
 .empty-state-desc strong{color:var(--ink-2);font-weight:600}
 
@@ -469,11 +858,11 @@ input{font-family:inherit}
 }
 .loader{display:inline-flex;gap:5px}
 .loader span{
-  width:7px;height:7px;border-radius:50%;background:var(--brand);
+  width:7px;height:7px;border-radius:50%;background:var(--primary-500);
   animation:bounce 1.2s infinite;
 }
-.loader span:nth-child(2){animation-delay:.15s}
-.loader span:nth-child(3){animation-delay:.3s}
+.loader span:nth-child(2){animation-delay:.15s;background:var(--accent-violet)}
+.loader span:nth-child(3){animation-delay:.3s;background:var(--accent-cyan)}
 @keyframes bounce{0%,80%,100%{transform:scale(.5);opacity:.4}40%{transform:scale(1);opacity:1}}
 
 /* ═══════════════════════════════════════════════════════════════
@@ -483,50 +872,53 @@ input{font-family:inherit}
   border-radius:var(--r-md);padding:18px 20px;
   margin-bottom:12px;border:1px solid var(--line);
   background:var(--surface);
+  transition:all .15s;
 }
-.risk-card.risk-high{border-left:3px solid var(--neg)}
-.risk-card.risk-med{border-left:3px solid var(--warn)}
+.risk-card:hover{box-shadow:var(--shadow-1)}
+.risk-card.risk-high{border-left:3px solid var(--neg);background:linear-gradient(90deg,#fff7f7 0%,#fff 60%)}
+.risk-card.risk-med{border-left:3px solid var(--warn);background:linear-gradient(90deg,#fffaf3 0%,#fff 60%)}
 .risk-card.risk-low{border-left:3px solid var(--ink-4)}
 .risk-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .risk-badge{
   display:inline-flex;align-items:center;
   padding:3px 9px;border-radius:99px;
-  font-size:10.5px;font-weight:700;letter-spacing:.03em;
+  font-size:10.5px;font-weight:800;letter-spacing:.04em;
 }
-.badge-high{background:var(--neg-soft);color:var(--neg)}
-.badge-med{background:var(--warn-soft);color:var(--warn)}
+.badge-high{background:var(--neg-soft);color:var(--neg-deep)}
+.badge-med{background:var(--warn-soft);color:var(--warn-deep)}
 .badge-low{background:var(--surface-2);color:var(--ink-3)}
-.risk-title{font-size:14px;font-weight:600;color:var(--ink-1);flex:1;min-width:0}
+.risk-title{font-size:14px;font-weight:700;color:var(--ink-1);flex:1;min-width:0;letter-spacing:-.005em}
 .risk-impact{
-  font-size:12.5px;font-weight:600;
+  font-size:13px;font-weight:700;
   font-variant-numeric:tabular-nums;font-family:var(--font-mono);
 }
-.risk-high .risk-impact{color:var(--neg)}
-.risk-med .risk-impact{color:var(--warn)}
+.risk-high .risk-impact{color:var(--neg-deep)}
+.risk-med .risk-impact{color:var(--warn-deep)}
 .risk-detail{font-size:13px;color:var(--ink-2);line-height:1.6;margin-bottom:6px}
 .risk-detail strong{color:var(--ink-1);font-weight:600}
 
 /* AI suggestion box */
 .ai-suggestion{
   margin-top:12px;padding:14px 16px;
-  background:linear-gradient(135deg,var(--brand-soft) 0%,#f4faf6 100%);
-  border:1px solid #cae8d6;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--primary-50) 0%,#f6f5ff 100%);
+  border:1px solid var(--primary-100);border-radius:var(--r-md);
 }
 .ai-suggestion-label{
   display:inline-flex;align-items:center;gap:6px;
-  font-size:11px;font-weight:700;color:var(--brand-deep);
-  background:#fff;padding:3px 10px;border-radius:99px;
-  margin-bottom:8px;border:1px solid #cae8d6;
+  font-size:10.5px;font-weight:800;color:var(--primary-700);
+  background:#fff;padding:4px 11px;border-radius:99px;
+  margin-bottom:9px;border:1px solid var(--primary-100);
+  letter-spacing:.04em;text-transform:uppercase;
 }
-.ai-suggestion-label::before{content:'✦';color:var(--brand)}
+.ai-suggestion-label::before{content:'✦';color:var(--accent-violet)}
 .ai-suggestion-text{font-size:13.5px;color:var(--ink-2);line-height:1.65}
 
 /* Table */
 .out-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
 .out-table th{
-  padding:10px 14px;text-align:left;
-  font-size:11px;font-weight:600;color:var(--ink-3);
-  text-transform:uppercase;letter-spacing:.04em;
+  padding:11px 14px;text-align:left;
+  font-size:10.5px;font-weight:700;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.05em;
   background:var(--surface-2);border-bottom:1px solid var(--line);
 }
 .out-table th:first-child{border-top-left-radius:var(--r-sm)}
@@ -539,9 +931,9 @@ input{font-family:inherit}
 .out-table tr:hover td{background:var(--surface-2)}
 .out-table tr.low-roas td{background:var(--neg-soft)}
 .out-table tr.low-roas:hover td{background:#fbe2dd}
-.action-continue{color:var(--pos);font-weight:600;font-size:12px;font-family:var(--font-mono);padding:2px 8px;background:var(--pos-soft);border-radius:99px}
-.action-pause{color:var(--neg);font-weight:600;font-size:12px;font-family:var(--font-mono);padding:2px 8px;background:var(--neg-soft);border-radius:99px}
-.action-restructure{color:var(--warn);font-weight:600;font-size:12px;font-family:var(--font-mono);padding:2px 8px;background:var(--warn-soft);border-radius:99px}
+.action-continue{color:var(--pos-deep);font-weight:700;font-size:11.5px;font-family:var(--font-mono);padding:3px 9px;background:var(--pos-soft);border-radius:99px}
+.action-pause{color:var(--neg-deep);font-weight:700;font-size:11.5px;font-family:var(--font-mono);padding:3px 9px;background:var(--neg-soft);border-radius:99px}
+.action-restructure{color:var(--warn-deep);font-weight:700;font-size:11.5px;font-family:var(--font-mono);padding:3px 9px;background:var(--warn-soft);border-radius:99px}
 
 /* Exec summary */
 .exec-section{padding:18px 0;border-bottom:1px solid var(--line)}
@@ -549,10 +941,13 @@ input{font-family:inherit}
 .exec-section:last-child{border-bottom:none}
 .exec-section-label{
   display:flex;align-items:center;gap:10px;
-  font-size:13px;font-weight:700;color:var(--ink-1);margin-bottom:10px;
+  font-size:13px;font-weight:800;color:var(--ink-1);margin-bottom:10px;
+  letter-spacing:-.005em;
 }
 .exec-section-label::before{
-  content:'';width:4px;height:16px;background:var(--brand);border-radius:2px;
+  content:'';width:4px;height:16px;
+  background:linear-gradient(180deg,var(--primary-500) 0%,var(--accent-violet) 100%);
+  border-radius:2px;
 }
 .exec-text{font-size:14px;line-height:1.7;color:var(--ink-2);margin-bottom:8px}
 .exec-text strong{color:var(--ink-1);font-weight:600}
@@ -562,39 +957,42 @@ input{font-family:inherit}
 }
 .exec-bullet::before{
   content:'';flex-shrink:0;width:5px;height:5px;
-  border-radius:50%;background:var(--brand);margin-top:9px;
+  border-radius:50%;background:var(--primary-500);margin-top:9px;
 }
 
 /* Pricing */
 .pricing-type{
-  font-size:12.5px;font-weight:700;color:var(--ink-1);
-  margin:20px 0 10px;padding:10px 14px;
-  background:var(--surface-2);border-radius:var(--r-sm);
-  border-left:3px solid var(--brand);
+  font-size:12.5px;font-weight:800;color:var(--ink-1);
+  margin:20px 0 10px;padding:11px 14px;
+  background:var(--primary-50);border-radius:var(--r-sm);
+  border-left:3px solid var(--primary-600);
+  letter-spacing:.02em;
 }
 .pricing-type:first-child{margin-top:0}
-.conf-high{color:var(--pos);font-weight:600;font-size:12px;font-family:var(--font-mono)}
-.conf-med{color:var(--warn);font-weight:600;font-size:12px;font-family:var(--font-mono)}
-.conf-low{color:var(--ink-3);font-weight:600;font-size:12px;font-family:var(--font-mono)}
+.conf-high{color:var(--pos-deep);font-weight:700;font-size:11.5px;font-family:var(--font-mono)}
+.conf-med{color:var(--warn-deep);font-weight:700;font-size:11.5px;font-family:var(--font-mono)}
+.conf-low{color:var(--ink-3);font-weight:700;font-size:11.5px;font-family:var(--font-mono)}
 
 /* Supplier blocks */
 .supplier-block{
   background:var(--surface);border:1px solid var(--line);
   border-radius:var(--r-md);padding:18px 20px;margin-bottom:12px;
+  transition:all .15s;
 }
+.supplier-block:hover{box-shadow:var(--shadow-1);border-color:var(--line-2)}
 .supplier-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
-.supplier-name{font-size:14px;font-weight:600;color:var(--ink-1)}
-.supplier-change{font-size:13px;font-weight:600;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
-.sup-increase{color:var(--neg)}
-.sup-decrease{color:var(--pos)}
+.supplier-name{font-size:14px;font-weight:700;color:var(--ink-1)}
+.supplier-change{font-size:13px;font-weight:700;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.sup-increase{color:var(--neg-deep)}
+.sup-decrease{color:var(--pos-deep)}
 .supplier-rec{
   margin-left:auto;display:inline-flex;align-items:center;
   padding:4px 11px;border-radius:99px;
-  font-size:11px;font-weight:700;letter-spacing:.02em;
+  font-size:10.5px;font-weight:800;letter-spacing:.04em;
 }
-.rec-absorb{background:var(--pos-soft);color:var(--pos)}
-.rec-pass{background:var(--info-soft);color:var(--info)}
-.rec-renegotiate{background:var(--neg-soft);color:var(--neg)}
+.rec-absorb{background:var(--pos-soft);color:var(--pos-deep)}
+.rec-pass{background:var(--info-soft);color:var(--info-deep)}
+.rec-renegotiate{background:var(--neg-soft);color:var(--neg-deep)}
 
 /* Raw fallback */
 .raw-output{
@@ -604,8 +1002,8 @@ input{font-family:inherit}
 .raw-output strong{color:var(--ink-1);font-weight:600}
 .error-box{
   padding:14px 16px;border-radius:var(--r-md);
-  background:var(--neg-soft);color:var(--neg);
-  font-size:13px;border:1px solid #f5c8c2;
+  background:var(--neg-soft);color:var(--neg-deep);
+  font-size:13px;border:1px solid #f5c8c2;font-weight:500;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -615,6 +1013,8 @@ input{font-family:inherit}
   .kpi-bento{grid-template-columns:1fr 1fr}
   .kpi-tile.hero{grid-column:1/-1}
   .charts-grid.cols-4{grid-template-columns:repeat(2,1fr)}
+  .connector-strip{grid-template-columns:1fr 1fr}
+  .ai-connector-row{grid-template-columns:1fr 1fr}
 }
 @media (max-width:820px){
   .shell{grid-template-columns:1fr}
@@ -622,9 +1022,12 @@ input{font-family:inherit}
   .content{padding:24px 20px 60px}
   .kpi-bento,.charts-grid.cols-3,.charts-grid.cols-2{grid-template-columns:1fr}
   .charts-grid.cols-4{grid-template-columns:1fr 1fr}
+  .connector-strip,.ai-connector-row{grid-template-columns:1fr}
   .page-head{flex-direction:column;align-items:flex-start}
   .topbar{padding:0 16px;gap:12px}
   .api-input{width:140px}
+  .ai-section{padding:20px 18px 24px}
+  .ai-section-head{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
@@ -662,10 +1065,15 @@ input{font-family:inherit}
   <!-- ── SIDE RAIL ── -->
   <aside class="rail">
     <div class="rail-section">
-      <div class="rail-label">Jump to</div>
+      <div class="rail-label">Navigation</div>
       <a class="rail-link active" onclick="scrollAnchor('overview')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
         Overview
+      </a>
+      <a class="rail-link" onclick="scrollAnchor('connectors')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Connections
+        <span class="rail-link-count">3</span>
       </a>
       <a class="rail-link" onclick="scrollAnchor('trends')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -675,7 +1083,7 @@ input{font-family:inherit}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
         Breakdown
       </a>
-      <a class="rail-link" onclick="scrollAnchor('analysis')">
+      <a class="rail-link has-alert" onclick="scrollAnchor('analysis')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v2a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
         AI Analysis
         <span class="rail-link-count">5</span>
@@ -683,7 +1091,13 @@ input{font-family:inherit}
     </div>
 
     <div class="rail-section">
-      <div class="rail-label">⚠ Needs attention</div>
+      <div class="attention-header">
+        <div class="attention-title">
+          <span class="attention-title-icon">!</span>
+          Needs Attention
+        </div>
+        <div class="attention-sub">Anomalies detected this week — ordered by impact</div>
+      </div>
       <div class="anomalies" id="anomaly-bar"></div>
     </div>
   </aside>
@@ -706,6 +1120,69 @@ input{font-family:inherit}
       </div>
     </div>
 
+    <!-- ═══ SECTION: CONNECTORS ═══ -->
+    <section class="section" id="connectors" style="margin-bottom:36px">
+      <div class="connector-strip">
+
+        <!-- Shopify -->
+        <div class="connector-card shopify">
+          <div class="connector-logo">
+            <!-- Shopify shopping-bag mark -->
+            <svg viewBox="0 0 256 292" xmlns="http://www.w3.org/2000/svg" aria-label="Shopify" preserveAspectRatio="xMidYMid meet">
+              <path fill="#95BF47" d="M223.774 57.34c-.213-1.49-1.49-2.342-2.554-2.342-1.064 0-23.428-.426-23.428-.426s-18.745-18.107-20.66-20.022c-1.916-1.916-5.532-1.49-6.81-1.064-.213 0-3.83 1.064-9.575 2.98-5.745-16.616-15.957-31.83-33.85-31.83-.426 0-1.064 0-1.703.213C120.553 1.703 114.808 0 110.127 0 73.51 0 55.83 45.793 50.298 69.008c-14.255 4.467-24.467 7.66-25.745 8.085-7.99 2.553-8.21 2.766-9.275 10.34C14.426 93.106 0 240.5 0 240.5l145.043 27.234 78.498-16.997s-.426-187.83-1.703-189.32zM134.13 35.83a132.59 132.59 0 0 0-7.873 2.553v-1.703c0-7.234-1.064-13.085-2.766-17.766 6.808 1.064 11.276 8.723 10.638 16.916zm-15.745 18.32c-5.32 1.703-11.064 3.405-16.808 5.107 1.703-6.382 4.681-12.766 8.297-16.808 1.49-1.49 3.405-3.193 5.745-4.043 2.554 5.32 3.192 12.553 2.766 15.745zM110.34 9.787c1.916 0 3.405.638 4.894 1.916-7.448 3.404-15.32 12.34-18.724 30.106-4.682 1.49-9.15 2.766-13.405 4.043C88.99 31.83 100.21 9.787 110.34 9.787z"/>
+              <path fill="#5E8E3E" d="M221.22 54.998c-1.064 0-23.428-.426-23.428-.426s-18.745-18.107-20.66-20.022c-.638-.638-1.49-1.064-2.553-1.49l-10.34 232.78 78.498-16.998s-.426-187.83-1.703-189.32c-.213-1.49-1.49-2.342-2.554-2.342l-17.262-2.18z"/>
+              <path fill="#FFF" d="M128.13 95.106L116.42 132c-3.405-1.703-7.873-2.553-13.405-2.553-9.787 0-10.213 6.17-10.213 7.66 0 8.297 21.276 11.49 21.276 30.66 0 15.107-9.575 24.682-22.553 24.682-15.745 0-23.404-9.787-23.404-9.787l4.255-13.83s8.085 6.808 14.681 6.808c4.469 0 6.382-3.405 6.382-5.957 0-10.85-17.66-11.276-17.66-28.937 0-14.681 10.638-29.149 31.916-29.149 8.297 0 12.34 2.51 12.34 2.51z"/>
+            </svg>
+          </div>
+          <div class="connector-text">
+            <div class="connector-name-row">
+              <span class="connector-name">Shopify</span>
+              <span class="connector-badge">Connected</span>
+            </div>
+            <div class="connector-status">Last sync 2 min ago · 7 SKUs</div>
+          </div>
+        </div>
+
+        <!-- Google Ads -->
+        <div class="connector-card google">
+          <div class="connector-logo">
+            <!-- Google Ads -->
+            <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" aria-label="Google Ads">
+              <path fill="#FBBC04" d="M9.5 142.6 73 32.4c8.9 5.2 56 31 64.1 35.8L73.6 178.4C66.6 190.4 51.2 194.7 39 187.5 27.1 180.6 22.8 165 30 153c.3-.4-19.4 33.6-20.5-10.4z"/>
+              <path fill="#4285F4" d="M182.5 142.6 119 32.4c-7.2-12.4-22.7-16.4-34.6-9.5C72.5 30 68.5 45.5 75.4 57.5l63.5 110c7.2 12.4 22.7 16.4 34.6 9.5 11.7-7 15.9-22.5 9-34.4z"/>
+              <circle fill="#34A853" cx="34.4" cy="157.6" r="25"/>
+            </svg>
+          </div>
+          <div class="connector-text">
+            <div class="connector-name-row">
+              <span class="connector-name">Google Ads</span>
+              <span class="connector-badge">Connected</span>
+            </div>
+            <div class="connector-status">Last sync 5 min ago · 7 campaigns</div>
+          </div>
+        </div>
+
+        <!-- Xero -->
+        <div class="connector-card xero">
+          <div class="connector-logo">
+            <!-- Xero mark -->
+            <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" aria-label="Xero">
+              <circle fill="#13B5EA" cx="128" cy="128" r="128"/>
+              <path fill="#FFFFFF" d="M77.4 128.1c0 3.4-2.7 6.1-6.1 6.1-3.4 0-6.1-2.7-6.1-6.1 0-3.4 2.7-6.1 6.1-6.1 3.4 0 6.1 2.8 6.1 6.1zm68 0 19.6-19.6c.6-.6 1-1.6 1-2.4 0-1.9-1.6-3.5-3.5-3.5-.9 0-1.8.4-2.5 1l-19.6 19.5-19.6-19.6c-.6-.6-1.5-1-2.4-1-1.9 0-3.5 1.6-3.5 3.5 0 1 .4 1.8 1 2.5l19.6 19.6-19.6 19.6c-.7.7-1 1.5-1 2.5 0 1.9 1.6 3.5 3.5 3.5 1 0 1.8-.4 2.5-1l19.6-19.6 19.6 19.5c.7.7 1.6 1.1 2.5 1.1 1.9 0 3.5-1.6 3.5-3.5 0-1-.4-1.8-1-2.5l-19.7-19.6zm44.3 0c0 3.4-2.7 6.1-6.1 6.1s-6.1-2.7-6.1-6.1 2.7-6.1 6.1-6.1c3.4 0 6.1 2.8 6.1 6.1z"/>
+            </svg>
+          </div>
+          <div class="connector-text">
+            <div class="connector-name-row">
+              <span class="connector-name">Xero</span>
+              <span class="connector-badge">Connected</span>
+            </div>
+            <div class="connector-status">Last sync 12 min ago · 5 suppliers</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- ═══ SECTION: OVERVIEW KPIs ═══ -->
     <section class="section">
       <div class="section-head">
@@ -722,19 +1199,19 @@ input{font-family:inherit}
           <span class="kpi-delta pos">▲ +8.2%</span>
           <div class="kpi-foot">vs $198.2K last week · Shopify</div>
         </div>
-        <div class="kpi-tile">
+        <div class="kpi-tile kpi-neg">
           <div class="kpi-label">Gross Margin</div>
           <div class="kpi-value">38.2%</div>
           <span class="kpi-delta neg">▼ −2.9pp</span>
           <div class="kpi-foot">vs 41.1% last week</div>
         </div>
-        <div class="kpi-tile">
+        <div class="kpi-tile kpi-neg">
           <div class="kpi-label">Blended ROAS</div>
           <div class="kpi-value">2.8×</div>
           <span class="kpi-delta neg">▼ −0.4×</span>
           <div class="kpi-foot">vs 4-week avg</div>
         </div>
-        <div class="kpi-tile">
+        <div class="kpi-tile kpi-warn">
           <div class="kpi-label">Freight / Revenue</div>
           <div class="kpi-value">5.3%</div>
           <span class="kpi-delta warn">▲ +0.8pp</span>
@@ -859,14 +1336,64 @@ input{font-family:inherit}
 
     <!-- ═══ SECTION: AI ANALYSIS ═══ -->
     <section class="section" id="analysis">
-      <div class="section-head">
-        <div class="section-head-l">
-          <div class="section-title"><span class="section-num">04</span>AI Analysis</div>
-          <div class="section-sub">Plain-English insights and recommended actions, grouped by data platform.</div>
+      <div class="ai-section">
+        <div class="ai-section-head">
+          <div class="section-head-l">
+            <div class="ai-section-title">
+              <span class="ai-section-num">04</span>
+              AI Analysis
+              <span class="ai-badge">Intelligence</span>
+            </div>
+            <div class="ai-section-sub">Insights and recommended actions, generated from your connected platforms.</div>
+          </div>
         </div>
-      </div>
 
-      <div class="platform-switcher">
+        <!-- Connector cards inside AI Analysis -->
+        <div class="ai-connector-row">
+          <div class="ai-connector shopify" onclick="openConnector('shopify')">
+            <div class="ai-connector-logo">
+              <svg viewBox="0 0 256 292" xmlns="http://www.w3.org/2000/svg" aria-label="Shopify" preserveAspectRatio="xMidYMid meet">
+                <path fill="#95BF47" d="M223.774 57.34c-.213-1.49-1.49-2.342-2.554-2.342-1.064 0-23.428-.426-23.428-.426s-18.745-18.107-20.66-20.022c-1.916-1.916-5.532-1.49-6.81-1.064-.213 0-3.83 1.064-9.575 2.98-5.745-16.616-15.957-31.83-33.85-31.83-.426 0-1.064 0-1.703.213C120.553 1.703 114.808 0 110.127 0 73.51 0 55.83 45.793 50.298 69.008c-14.255 4.467-24.467 7.66-25.745 8.085-7.99 2.553-8.21 2.766-9.275 10.34C14.426 93.106 0 240.5 0 240.5l145.043 27.234 78.498-16.997s-.426-187.83-1.703-189.32zM134.13 35.83a132.59 132.59 0 0 0-7.873 2.553v-1.703c0-7.234-1.064-13.085-2.766-17.766 6.808 1.064 11.276 8.723 10.638 16.916zm-15.745 18.32c-5.32 1.703-11.064 3.405-16.808 5.107 1.703-6.382 4.681-12.766 8.297-16.808 1.49-1.49 3.405-3.193 5.745-4.043 2.554 5.32 3.192 12.553 2.766 15.745zM110.34 9.787c1.916 0 3.405.638 4.894 1.916-7.448 3.404-15.32 12.34-18.724 30.106-4.682 1.49-9.15 2.766-13.405 4.043C88.99 31.83 100.21 9.787 110.34 9.787z"/>
+                <path fill="#5E8E3E" d="M221.22 54.998c-1.064 0-23.428-.426-23.428-.426s-18.745-18.107-20.66-20.022c-.638-.638-1.49-1.064-2.553-1.49l-10.34 232.78 78.498-16.998s-.426-187.83-1.703-189.32c-.213-1.49-1.49-2.342-2.554-2.342l-17.262-2.18z"/>
+                <path fill="#FFF" d="M128.13 95.106L116.42 132c-3.405-1.703-7.873-2.553-13.405-2.553-9.787 0-10.213 6.17-10.213 7.66 0 8.297 21.276 11.49 21.276 30.66 0 15.107-9.575 24.682-22.553 24.682-15.745 0-23.404-9.787-23.404-9.787l4.255-13.83s8.085 6.808 14.681 6.808c4.469 0 6.382-3.405 6.382-5.957 0-10.85-17.66-11.276-17.66-28.937 0-14.681 10.638-29.149 31.916-29.149 8.297 0 12.34 2.51 12.34 2.51z"/>
+              </svg>
+            </div>
+            <div class="ai-connector-info">
+              <div class="ai-connector-name">Shopify</div>
+              <div class="ai-connector-meta">Connected · 7 SKUs feeding analysis</div>
+            </div>
+            <svg class="ai-connector-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="ai-connector google" onclick="openConnector('google')">
+            <div class="ai-connector-logo">
+              <svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg" aria-label="Google Ads">
+                <path fill="#FBBC04" d="M9.5 142.6 73 32.4c8.9 5.2 56 31 64.1 35.8L73.6 178.4C66.6 190.4 51.2 194.7 39 187.5 27.1 180.6 22.8 165 30 153c.3-.4-19.4 33.6-20.5-10.4z"/>
+                <path fill="#4285F4" d="M182.5 142.6 119 32.4c-7.2-12.4-22.7-16.4-34.6-9.5C72.5 30 68.5 45.5 75.4 57.5l63.5 110c7.2 12.4 22.7 16.4 34.6 9.5 11.7-7 15.9-22.5 9-34.4z"/>
+                <circle fill="#34A853" cx="34.4" cy="157.6" r="25"/>
+              </svg>
+            </div>
+            <div class="ai-connector-info">
+              <div class="ai-connector-name">Google Ads</div>
+              <div class="ai-connector-meta">Connected · 7 campaigns feeding analysis</div>
+            </div>
+            <svg class="ai-connector-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="ai-connector xero" onclick="openConnector('xero')">
+            <div class="ai-connector-logo">
+              <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" aria-label="Xero">
+                <circle fill="#13B5EA" cx="128" cy="128" r="128"/>
+                <path fill="#FFFFFF" d="M77.4 128.1c0 3.4-2.7 6.1-6.1 6.1-3.4 0-6.1-2.7-6.1-6.1 0-3.4 2.7-6.1 6.1-6.1 3.4 0 6.1 2.8 6.1 6.1zm68 0 19.6-19.6c.6-.6 1-1.6 1-2.4 0-1.9-1.6-3.5-3.5-3.5-.9 0-1.8.4-2.5 1l-19.6 19.5-19.6-19.6c-.6-.6-1.5-1-2.4-1-1.9 0-3.5 1.6-3.5 3.5 0 1 .4 1.8 1 2.5l19.6 19.6-19.6 19.6c-.7.7-1 1.5-1 2.5 0 1.9 1.6 3.5 3.5 3.5 1 0 1.8-.4 2.5-1l19.6-19.6 19.6 19.5c.7.7 1.6 1.1 2.5 1.1 1.9 0 3.5-1.6 3.5-3.5 0-1-.4-1.8-1-2.5l-19.7-19.6zm44.3 0c0 3.4-2.7 6.1-6.1 6.1s-6.1-2.7-6.1-6.1 2.7-6.1 6.1-6.1c3.4 0 6.1 2.8 6.1 6.1z"/>
+              </svg>
+            </div>
+            <div class="ai-connector-info">
+              <div class="ai-connector-name">Xero</div>
+              <div class="ai-connector-meta">Connected · 5 suppliers feeding analysis</div>
+            </div>
+            <svg class="ai-connector-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <div class="platform-switcher">
         <button class="active" onclick="switchPlatform('shopify')">
           <span class="pdot" style="background:var(--shopify)"></span>Shopify
         </button>
@@ -1057,7 +1584,7 @@ input{font-family:inherit}
           <div class="platform-summary-icon all">📋</div>
           <div class="platform-summary-text">
             <div class="platform-summary-title">Cross-platform summary</div>
-            <div class="platform-summary-sub">A plain-English brief that combines Shopify, Google Ads and Xero data into one story.</div>
+            <div class="platform-summary-sub">A brief that combines Shopify, Google Ads and Xero data into one story.</div>
           </div>
         </div>
 
@@ -1065,7 +1592,7 @@ input{font-family:inherit}
           <div class="card-head" onclick="toggleCard('c4')">
             <div class="card-emoji">📋</div>
             <div class="card-meta">
-              <div class="card-title">Give me a plain-English summary</div>
+              <div class="card-title">Give me a weekly summary</div>
               <div class="card-sub">A 60-second brief covering what happened, what needs attention and what to do today</div>
             </div>
             <div class="card-actions">
@@ -1097,6 +1624,7 @@ input{font-family:inherit}
         </div>
       </div>
 
+      </div><!-- /.ai-section -->
     </section>
 
   </main>
@@ -1177,11 +1705,23 @@ function detectAnomalies() {
   const flags = [];
   DATA.margin.forEach(r => {
     const delta = (r.gross_margin_pct - r.prior_avg_gm_pct) / r.prior_avg_gm_pct;
-    if (delta < -0.05) flags.push({metric: r.name, delta: delta, label: `GM ${r.gross_margin_pct}% vs ${r.prior_avg_gm_pct}%`, severity: delta < -0.15 ? 'high' : 'med'});
+    if (delta < -0.05) flags.push({
+      metric: r.name,
+      delta: delta,
+      label: `Margin ${r.gross_margin_pct}% vs ${r.prior_avg_gm_pct}% prior`,
+      severity: delta < -0.15 ? 'high' : 'med',
+      hint: delta < -0.15 ? 'Review pricing & discount' : 'Investigate cause'
+    });
   });
   DATA.suppliers.forEach(r => {
     const delta = (r.current_unit_cost - r.prior_unit_cost) / r.prior_unit_cost;
-    if (Math.abs(delta) > 0.03) flags.push({metric: r.supplier, delta, label: `Cost ${delta>0?'+':''}${(delta*100).toFixed(1)}%`, severity: delta > 0.08 ? 'high' : 'med'});
+    if (Math.abs(delta) > 0.03) flags.push({
+      metric: r.supplier,
+      delta,
+      label: `Unit cost ${delta>0?'+':''}${(delta*100).toFixed(1)}%`,
+      severity: delta > 0.08 ? 'high' : 'med',
+      hint: delta > 0.08 ? 'Renegotiate or pass on' : 'Monitor closely'
+    });
   });
   return flags.sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 6);
 }
@@ -1190,8 +1730,9 @@ function renderAnomalies() {
   const flags = detectAnomalies();
   const bar = document.getElementById('anomaly-bar');
   bar.innerHTML = flags.map(f => `
-    <div class="anomaly-mini ${f.severity==='high'?'anom-high':'anom-med'}">
-      <div class="anomaly-mini-title">${f.metric.length>22?f.metric.slice(0,20)+'…':f.metric}</div>
+    <div class="anomaly-mini ${f.severity==='high'?'anom-high':'anom-med'}" title="${f.hint}">
+      <div class="anomaly-mini-row">${f.severity==='high'?'Critical':'Warning'}</div>
+      <div class="anomaly-mini-title">${f.metric.length>26?f.metric.slice(0,24)+'…':f.metric}</div>
       <div class="anomaly-mini-delta">${f.label}</div>
     </div>`).join('');
 }
@@ -1606,11 +2147,22 @@ async function runAll() {
   const btn = document.getElementById('run-all-btn');
   btn.disabled = true;
   btn.textContent = '⏳ Running…';
-  for (const tid of ['t1','t2','t3','t4','t5']) {
+  const TIDS = ['t1','t2','t3','t4','t5'];
+  for (const tid of TIDS) {
     await runTemplate(tid);
   }
   btn.disabled = false;
   btn.textContent = '▶ Run All Templates';
+
+  // Only navigate to AI Analysis if every template succeeded
+  const allSucceeded = TIDS.every(tid => {
+    const chip = document.getElementById('chip-' + tid);
+    return chip && chip.classList.contains('chip-done');
+  });
+  if (allSucceeded) {
+    const target = document.getElementById('analysis');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -1639,6 +2191,17 @@ function switchPlatform(name) {
   });
 }
 
+// Connector card click handler — switches AI Analysis to that platform's tab
+function openConnector(name) {
+  const map = {shopify:'shopify', google:'googleads', xero:'xero'};
+  const target = map[name] || name;
+  // Scroll to AI Analysis section
+  const el = document.getElementById('analysis');
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  // Switch to the correct platform tab after a brief pause for scroll
+  setTimeout(() => switchPlatform(target), 350);
+}
+
 renderAnomalies();
 
 // ═══════════════════════════════════════════════════
@@ -1646,118 +2209,181 @@ renderAnomalies();
 // ═══════════════════════════════════════════════════
 
 function initCharts() {
-  const GREEN  = '#0a8d4a';
-  const GREEN2 = '#4ade80';
-  const RED    = '#d33a2c';
-  const AMBER  = '#b25e09';
-  const BLUE   = '#1e5fb8';
-  const TEAL   = '#0a7da5';
-  const PURPLE = '#7c3aed';
-  const ORANGE = '#b25e09';
-  const RULE   = '#e6e8eb';
-  const INK3   = '#6a7178';
+  // ─── Unified palette — indigo / violet / cyan scheme only ───
+  const INDIGO    = '#5b5cf0';   // primary-500
+  const INDIGO_D  = '#4845d8';   // primary-600
+  const INDIGO_L  = '#9aa3ff';   // primary-300
+  const VIOLET    = '#8b5cf6';   // accent-violet
+  const VIOLET_L  = '#c4b5fd';
+  const CYAN      = '#06b6d4';   // accent-cyan
+  const CYAN_L    = '#67e8f9';
+  const TEAL      = '#0891b2';
+  const SLATE     = '#94a3b8';
+  const SLATE_L   = '#cbd5e1';
+  const RULE      = '#e4e6ee';
+  const INK3      = '#5b6271';
+  const INK4      = '#8b91a0';
 
   const WEEKS  = ['W16','W17','W18','W19','W20','W21','W22','W23'];
+
+  // ─── Shared tooltip config — consistent across all charts ───
+  const TOOLTIP_BASE = {
+    backgroundColor:'#15181f',
+    titleColor:'#fff',
+    titleFont:{family:'Geist',size:12,weight:'700'},
+    titleMarginBottom:6,
+    bodyColor:'#e4e6ee',
+    bodyFont:{family:'Geist',size:12.5,weight:'500'},
+    padding:{x:12,y:10},
+    cornerRadius:8,
+    displayColors:true,
+    boxWidth:8,
+    boxHeight:8,
+    boxPadding:6,
+    borderColor:'rgba(255,255,255,0.08)',
+    borderWidth:1,
+    caretSize:6,
+  };
 
   const baseOpts = {
     responsive:true,
     maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{
-      backgroundColor:'#0d1117',titleFont:{family:'Inter',size:11,weight:'600'},
-      bodyFont:{family:'Inter',size:12},padding:10,cornerRadius:8,
-      displayColors:false,
-    }},
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{display:false},
+      tooltip:{...TOOLTIP_BASE,displayColors:false}
+    },
     scales:{
-      x:{grid:{display:false},ticks:{font:{family:'JetBrains Mono',size:10},color:INK3},border:{display:false}},
-      y:{grid:{color:RULE,drawBorder:false},ticks:{font:{family:'JetBrains Mono',size:10},color:INK3},border:{display:false}}
+      x:{grid:{display:false},ticks:{font:{family:'Geist Mono',size:10},color:INK3},border:{display:false}},
+      y:{grid:{color:RULE,drawBorder:false},ticks:{font:{family:'Geist Mono',size:10},color:INK3},border:{display:false}}
     }
   };
 
-  // ── 1. Weekly Revenue sparkline ──
+  // ── 1. Weekly Revenue sparkline (indigo) ──
   new Chart(document.getElementById('chart-revenue'),{
     type:'line',
     data:{
       labels:WEEKS,
       datasets:[{
+        label:'Revenue',
         data:[162000,171500,158000,185000,178000,192000,198200,214400],
-        borderColor:GREEN,borderWidth:2,pointRadius:2,pointBackgroundColor:GREEN,
+        borderColor:INDIGO,borderWidth:2.5,pointRadius:2,pointHoverRadius:5,
+        pointBackgroundColor:INDIGO,pointBorderColor:'#fff',pointBorderWidth:1.5,
         tension:0.4,fill:true,
         backgroundColor:(ctx)=>{
           const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
-          g.addColorStop(0,'#16a34a28');g.addColorStop(1,'#16a34a00');return g;
+          g.addColorStop(0,'rgba(91,92,240,.24)');g.addColorStop(1,'rgba(91,92,240,0)');return g;
         }
       }]
     },
-    options:{...baseOpts,scales:{
-      x:{...baseOpts.scales.x},
-      y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
-    }}
+    options:{...baseOpts,
+      plugins:{...baseOpts.plugins,tooltip:{...TOOLTIP_BASE,displayColors:false,
+        callbacks:{
+          title:(items)=>`Week ${items[0].label.replace('W','')}, 2025`,
+          label:(ctx)=>`Revenue: $${(ctx.parsed.y/1000).toFixed(1)}K`
+        }
+      }},
+      scales:{
+        x:{...baseOpts.scales.x},
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
+      }
+    }
   });
 
-  // ── 2. Gross Margin % trend ──
+  // ── 2. Gross Margin % trend (violet) ──
   new Chart(document.getElementById('chart-gm'),{
     type:'line',
     data:{
       labels:WEEKS,
       datasets:[{
+        label:'Gross Margin',
         data:[43.2,42.8,44.1,43.5,41.8,40.9,41.1,38.2],
-        borderColor:RED,borderWidth:2,pointRadius:2,pointBackgroundColor:RED,
+        borderColor:VIOLET,borderWidth:2.5,pointRadius:2,pointHoverRadius:5,
+        pointBackgroundColor:VIOLET,pointBorderColor:'#fff',pointBorderWidth:1.5,
         tension:0.4,fill:true,
         backgroundColor:(ctx)=>{
           const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
-          g.addColorStop(0,'#c0392b22');g.addColorStop(1,'#c0392b00');return g;
+          g.addColorStop(0,'rgba(139,92,246,.22)');g.addColorStop(1,'rgba(139,92,246,0)');return g;
         }
       }]
     },
-    options:{...baseOpts,scales:{
-      x:{...baseOpts.scales.x},
-      y:{...baseOpts.scales.y,min:35,max:47,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
-    }}
+    options:{...baseOpts,
+      plugins:{...baseOpts.plugins,tooltip:{...TOOLTIP_BASE,displayColors:false,
+        callbacks:{
+          title:(items)=>`Week ${items[0].label.replace('W','')}, 2025`,
+          label:(ctx)=>`Gross Margin: ${ctx.parsed.y.toFixed(1)}%`
+        }
+      }},
+      scales:{
+        x:{...baseOpts.scales.x},
+        y:{...baseOpts.scales.y,min:35,max:47,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
+      }
+    }
   });
 
-  // ── 3. Blended ROAS trend ──
+  // ── 3. Blended ROAS trend (cyan) ──
   new Chart(document.getElementById('chart-roas'),{
     type:'line',
     data:{
       labels:WEEKS,
       datasets:[{
+        label:'Blended ROAS',
         data:[3.6,3.4,3.8,3.5,3.2,3.1,3.2,2.8],
-        borderColor:AMBER,borderWidth:2,pointRadius:2,pointBackgroundColor:AMBER,
+        borderColor:CYAN,borderWidth:2.5,pointRadius:2,pointHoverRadius:5,
+        pointBackgroundColor:CYAN,pointBorderColor:'#fff',pointBorderWidth:1.5,
         tension:0.4,fill:true,
         backgroundColor:(ctx)=>{
           const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
-          g.addColorStop(0,'#b35a0022');g.addColorStop(1,'#b35a0000');return g;
+          g.addColorStop(0,'rgba(6,182,212,.22)');g.addColorStop(1,'rgba(6,182,212,0)');return g;
         }
       }]
     },
-    options:{...baseOpts,scales:{
-      x:{...baseOpts.scales.x},
-      y:{...baseOpts.scales.y,min:2,max:4.5,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'×'}}
-    }}
+    options:{...baseOpts,
+      plugins:{...baseOpts.plugins,tooltip:{...TOOLTIP_BASE,displayColors:false,
+        callbacks:{
+          title:(items)=>`Week ${items[0].label.replace('W','')}, 2025`,
+          label:(ctx)=>`Blended ROAS: ${ctx.parsed.y.toFixed(1)}×`
+        }
+      }},
+      scales:{
+        x:{...baseOpts.scales.x},
+        y:{...baseOpts.scales.y,min:2,max:4.5,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'×'}}
+      }
+    }
   });
 
-  // ── 4. Freight / Revenue % trend ──
+  // ── 4. Freight / Revenue % trend (teal) ──
   new Chart(document.getElementById('chart-freight'),{
     type:'line',
     data:{
       labels:WEEKS,
       datasets:[{
+        label:'Freight / Revenue',
         data:[3.8,3.9,4.0,4.1,4.2,4.3,4.5,5.3],
-        borderColor:ORANGE,borderWidth:2,pointRadius:2,pointBackgroundColor:ORANGE,
+        borderColor:TEAL,borderWidth:2.5,pointRadius:2,pointHoverRadius:5,
+        pointBackgroundColor:TEAL,pointBorderColor:'#fff',pointBorderWidth:1.5,
         tension:0.4,fill:true,
         backgroundColor:(ctx)=>{
           const g=ctx.chart.ctx.createLinearGradient(0,0,0,80);
-          g.addColorStop(0,'#ea580c22');g.addColorStop(1,'#ea580c00');return g;
+          g.addColorStop(0,'rgba(8,145,178,.22)');g.addColorStop(1,'rgba(8,145,178,0)');return g;
         }
       }]
     },
-    options:{...baseOpts,scales:{
-      x:{...baseOpts.scales.x},
-      y:{...baseOpts.scales.y,min:3,max:6,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
-    }}
+    options:{...baseOpts,
+      plugins:{...baseOpts.plugins,tooltip:{...TOOLTIP_BASE,displayColors:false,
+        callbacks:{
+          title:(items)=>`Week ${items[0].label.replace('W','')}, 2025`,
+          label:(ctx)=>`Freight: ${ctx.parsed.y.toFixed(1)}% of revenue`
+        }
+      }},
+      scales:{
+        x:{...baseOpts.scales.x},
+        y:{...baseOpts.scales.y,min:3,max:6,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
+      }
+    }
   });
 
-  // ── 5. SKU Gross Margin — current vs prior (grouped bar) ──
+  // ── 5. SKU Gross Margin — current vs prior (grouped bar: indigo + indigo-light) ──
   const skus     = DATA.margin.map(d=>d.name.replace(' Pro','').replace(' Premium','').replace(' Elite','').replace(' Ultra',''));
   const gmCurr   = DATA.margin.map(d=>d.gross_margin_pct);
   const gmPrior  = DATA.margin.map(d=>d.prior_avg_gm_pct);
@@ -1766,20 +2392,27 @@ function initCharts() {
     data:{
       labels:skus,
       datasets:[
-  {label:'This week',data:gmCurr,backgroundColor:RED+'99',borderRadius:4,borderSkipped:false},
-  {label:'Prior avg',data:gmPrior,backgroundColor:'#c8dece',borderRadius:4,borderSkipped:false}
-]
+        {label:'This week',data:gmCurr,backgroundColor:INDIGO,borderRadius:5,borderSkipped:false,maxBarThickness:28},
+        {label:'Prior avg',data:gmPrior,backgroundColor:INDIGO_L,borderRadius:5,borderSkipped:false,maxBarThickness:28}
+      ]
     },
     options:{...baseOpts,
-      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'Inter',size:10},color:INK3,boxWidth:10,padding:12}}},
+      plugins:{...baseOpts.plugins,
+        legend:{display:true,position:'top',align:'end',labels:{font:{family:'Geist',size:11,weight:'500'},color:INK3,boxWidth:10,boxHeight:10,padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{...TOOLTIP_BASE,
+          callbacks:{
+            label:(ctx)=>`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
+          }
+        }
+      },
       scales:{
-        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30}},
+        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30,font:{family:'Geist',size:10,weight:'500'},color:INK3}},
         y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
       }
     }
   });
 
-  // ── 6. Campaign Profit ROAS horizontal bar ──
+  // ── 6. Campaign Profit ROAS horizontal bar (indigo for healthy, slate for under threshold) ──
   const camps = DATA.campaigns.map(c=>c.campaign.replace(' – ','\n'));
   const profRoas = DATA.campaigns.map(c=>{
     const gm = DATA.sku_margins[c.primary_sku]?.gm_pct || 30;
@@ -1792,62 +2425,84 @@ function initCharts() {
       datasets:[{
         label:'Profit ROAS',
         data:profRoas,
-        backgroundColor:profRoas.map(v=>v>=1.2?GREEN+'cc':RED+'cc'),
-        borderRadius:4,borderSkipped:false
+        backgroundColor:profRoas.map(v=>v>=1.2?INDIGO:SLATE_L),
+        borderRadius:5,borderSkipped:false,maxBarThickness:22
       }]
     },
     options:{...baseOpts,
       indexAxis:'y',
       plugins:{...baseOpts.plugins,
-        annotation:{annotations:{line1:{type:'line',x:1.2,borderColor:AMBER,borderWidth:1.5,borderDash:[4,3],label:{content:'Min 1.2×',display:true,font:{size:9,family:'JetBrains Mono'},color:AMBER,position:'end'}}}}
+        tooltip:{...TOOLTIP_BASE,displayColors:false,
+          callbacks:{
+            title:(items)=>items[0].label.replace('\n',' – '),
+            label:(ctx)=>{
+              const v=ctx.parsed.x;
+              const verdict=v>=1.2?' (Profitable)':' (Below threshold)';
+              return `Profit ROAS: ${v.toFixed(2)}×${verdict}`;
+            }
+          }
+        },
+        annotation:{annotations:{line1:{type:'line',x:1.2,borderColor:VIOLET,borderWidth:1.5,borderDash:[4,3],label:{content:'Min 1.2×',display:true,font:{size:9,family:'Geist Mono'},color:VIOLET,position:'end'}}}}
       },
       scales:{
         x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,callback:v=>v+'×'}},
-        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{family:'Inter',size:10}}}
+        y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,font:{family:'Geist',size:10,weight:'500'},color:INK3}}
       }
     }
   });
 
-  // ── 7. Revenue by channel donut ──
+  // ── 7. Revenue by channel donut (indigo / violet / cyan) ──
   const chanMap = {};
   DATA.margin.forEach(d=>{chanMap[d.channel]=(chanMap[d.channel]||0)+d.revenue;});
+  const chanTotal = Object.values(chanMap).reduce((a,b)=>a+b,0);
   new Chart(document.getElementById('chart-channel'),{
     type:'doughnut',
     data:{
       labels:Object.keys(chanMap),
-      datasets:[{data:Object.values(chanMap),backgroundColor:[GREEN,BLUE,TEAL],borderWidth:3,borderColor:'#ffffff',hoverOffset:4}]
+      datasets:[{data:Object.values(chanMap),backgroundColor:[INDIGO,VIOLET,CYAN],borderWidth:3,borderColor:'#ffffff',hoverOffset:6}]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
+      cutout:'62%',
       plugins:{
-        legend:{display:true,position:'bottom',labels:{font:{family:'Inter',size:10},color:INK3,boxWidth:10,padding:10}},
-        tooltip:{backgroundColor:'#0d1117',titleFont:{family:'JetBrains Mono',size:10},bodyFont:{family:'Inter',size:11},padding:8,cornerRadius:6,
-          callbacks:{label:ctx=>' $'+(ctx.raw/1000).toFixed(1)+'K ('+Math.round(ctx.raw/Object.values(chanMap).reduce((a,b)=>a+b,0)*100)+'%)'}}
+        legend:{display:true,position:'bottom',labels:{font:{family:'Geist',size:11,weight:'500'},color:INK3,boxWidth:10,boxHeight:10,padding:12,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{...TOOLTIP_BASE,displayColors:true,
+          callbacks:{
+            label:(ctx)=>` ${ctx.label}: $${(ctx.raw/1000).toFixed(1)}K (${Math.round(ctx.raw/chanTotal*100)}%)`
+          }
+        }
       }
     }
   });
 
-  // ── 8. Ad Spend vs Revenue by campaign ──
+  // ── 8. Ad Spend vs Revenue by campaign (violet vs indigo) ──
   const shortCamps = DATA.campaigns.map(c=>c.campaign.split('–')[0].trim().split(' ').slice(0,2).join(' '));
   new Chart(document.getElementById('chart-spend'),{
     type:'bar',
     data:{
       labels:shortCamps,
       datasets:[
-        {label:'Spend',data:DATA.campaigns.map(c=>c.spend),backgroundColor:RED+'99',borderRadius:4,borderSkipped:false},
-        {label:'Revenue',data:DATA.campaigns.map(c=>c.revenue),backgroundColor:GREEN+'99',borderRadius:4,borderSkipped:false}
+        {label:'Ad spend',data:DATA.campaigns.map(c=>c.spend),backgroundColor:VIOLET_L,borderRadius:5,borderSkipped:false,maxBarThickness:22},
+        {label:'Revenue',data:DATA.campaigns.map(c=>c.revenue),backgroundColor:INDIGO,borderRadius:5,borderSkipped:false,maxBarThickness:22}
       ]
     },
     options:{...baseOpts,
-      plugins:{...baseOpts.plugins,legend:{display:true,position:'top',labels:{font:{family:'Inter',size:10},color:INK3,boxWidth:10,padding:10}}},
+      plugins:{...baseOpts.plugins,
+        legend:{display:true,position:'top',align:'end',labels:{font:{family:'Geist',size:11,weight:'500'},color:INK3,boxWidth:10,boxHeight:10,padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{...TOOLTIP_BASE,
+          callbacks:{
+            label:(ctx)=>`${ctx.dataset.label}: $${(ctx.parsed.y/1000).toFixed(1)}K`
+          }
+        }
+      },
       scales:{
-        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30}},
+        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,maxRotation:30,minRotation:30,font:{family:'Geist',size:10,weight:'500'},color:INK3}},
         y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
       }
     }
   });
 
-  // ── 9. Supplier cost change % ──
+  // ── 9. Supplier cost change % (cyan up, violet down — visualized as magnitude not good/bad) ──
   const supNames = DATA.suppliers.map(s=>s.supplier.split(' ')[0]);
   const supChange = DATA.suppliers.map(s=>+((s.current_unit_cost-s.prior_unit_cost)/s.prior_unit_cost*100).toFixed(1));
   new Chart(document.getElementById('chart-supplier'),{
@@ -1855,15 +2510,26 @@ function initCharts() {
     data:{
       labels:supNames,
       datasets:[{
-        label:'Cost change %',
+        label:'Unit cost change',
         data:supChange,
-        backgroundColor:supChange.map(v=>v>5?RED+'cc':v>0?AMBER+'cc':GREEN+'cc'),
-        borderRadius:4,borderSkipped:false
+        backgroundColor:supChange.map(v=>v>0?VIOLET:CYAN),
+        borderRadius:5,borderSkipped:false,maxBarThickness:32
       }]
     },
     options:{...baseOpts,
+      plugins:{...baseOpts.plugins,
+        tooltip:{...TOOLTIP_BASE,displayColors:false,
+          callbacks:{
+            label:(ctx)=>{
+              const v=ctx.parsed.y;
+              const dir=v>0?'increase':'decrease';
+              return `Cost ${dir}: ${v>0?'+':''}${v.toFixed(1)}%`;
+            }
+          }
+        }
+      },
       scales:{
-        x:{...baseOpts.scales.x},
+        x:{...baseOpts.scales.x,ticks:{...baseOpts.scales.x.ticks,font:{family:'Geist',size:10,weight:'500'},color:INK3}},
         y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}
       }
     }
